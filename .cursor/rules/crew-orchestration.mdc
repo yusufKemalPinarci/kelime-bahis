@@ -1,0 +1,32 @@
+---
+description: CrewAI-tarzı yerel agent işbirliği — API’siz crew orkestrasyonu
+globs: lib/crew/**/*.dart, scripts/**/*.dart, AGENTS.md
+alwaysApply: false
+---
+
+# Yerel Crew (CrewAI ilhamı, API yok)
+
+CrewAI’deki `Agent` → `Task` → `Crew.kickoff()` modelini taklit et; dış LLM çağırma.
+
+## Roller
+
+1. **DesignerAgent** — mekanik ve seviye hedefleri
+2. **DictionaryAgent** — Türkçe kelime listesi doğrulama/filtre
+3. **BalanceAgent** — harf puanı, hedef skor, joker gücü
+4. **ContentAgent** — boss kuralları, mağaza eşyaları, metinler
+
+## Süreç
+
+- Varsayılan: **sequential** (sıralı). Her agent çıktıyı bir sonrakine `CrewContext` ile aktarır.
+- Sonuçlar `assets/content/` veya `crew/output/` altına yazılır.
+- Yeni içerik için `dart run scripts/run_crew.dart` çalıştır.
+
+## Cursor’da çalışma
+
+Büyük bir özellik istendiğinde:
+1. `dart run scripts/run_debate.dart` — agent tartışması + onaylı backlog
+2. Onaylanan `id`’leri uygula
+3. İstersen `dart run scripts/run_crew.dart` içerik senkronu
+
+Agent sırası (içerik): Designer → Dictionary → Balance → Content  
+Agent sırası (tartışma): Designer → Dictionary → Balance → Content → Facilitator

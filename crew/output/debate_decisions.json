@@ -1,0 +1,180 @@
+{
+  "results": [
+    {
+      "task": "designer_pitch",
+      "agent": "Tasarimci",
+      "output": "Tasarimci: sadelik 3 oneri"
+    },
+    {
+      "task": "dictionary_pitch",
+      "agent": "Sozluk",
+      "output": "Sozluk: 3 oneri"
+    },
+    {
+      "task": "balance_pitch",
+      "agent": "Denge",
+      "output": "Denge: 3 oneri"
+    },
+    {
+      "task": "content_pitch",
+      "agent": "Icerik/Gorsel",
+      "output": "Icerik: 3 oneri"
+    },
+    {
+      "task": "facilitate",
+      "agent": "Facilitator",
+      "output": "Tur5: inline_how_to_play, simplify_controls, common_tr_dict, show_word_preview_score, skip_starter_default"
+    }
+  ],
+  "context": {
+    "current_task": "facilitate",
+    "task_description": "Oyla ve backlog onayla",
+    "debate_designer": [
+      {
+        "id": "inline_how_to_play",
+        "title": "Oyun ekraninda hep gorunen 1 satir kural",
+        "why": "Dialog unutulur; HUD ogretir",
+        "effort": 1,
+        "impact": 5
+      },
+      {
+        "id": "simplify_controls",
+        "title": "Temizle/Sirala ikincil; OYNA buyuk",
+        "why": "Ana eylem net",
+        "effort": 2,
+        "impact": 5
+      },
+      {
+        "id": "skip_starter_default",
+        "title": "Starter joker opsiyonel; varsayilan direkt oyna",
+        "why": "Ilk engeli kaldir",
+        "effort": 2,
+        "impact": 4
+      }
+    ],
+    "last_output": "Tur5: inline_how_to_play, simplify_controls, common_tr_dict, show_word_preview_score, skip_starter_default",
+    "debate_dictionary": [
+      {
+        "id": "common_tr_dict",
+        "title": "Yaygin Turkce sozluk yenile (3-7 harf)",
+        "why": "Oyuncu kelime bulabilsin",
+        "effort": 3,
+        "impact": 5
+      },
+      {
+        "id": "inline_how_to_play",
+        "title": "Kural: Turkce kelime kur, hedefi gec",
+        "why": "Sozluk beklentisini netlestir",
+        "effort": 1,
+        "impact": 4
+      },
+      {
+        "id": "show_word_preview_score",
+        "title": "Secili kelimenin anlik skorunu goster",
+        "why": "OYNA oncesi ne olacagini anlar",
+        "effort": 2,
+        "impact": 4
+      }
+    ],
+    "debate_balance": [
+      {
+        "id": "easier_early_targets",
+        "title": "Ilk 3 seviye daha dusuk hedef",
+        "why": "Ogrenirken kaybetme",
+        "effort": 1,
+        "impact": 5
+      },
+      {
+        "id": "skip_starter_default",
+        "title": "Joker secimini atla; magazada ogren",
+        "why": "Karar yuku sonraya",
+        "effort": 1,
+        "impact": 3
+      },
+      {
+        "id": "show_word_preview_score",
+        "title": "Anlik skor onizleme",
+        "why": "Hedefe ne kadar kaldigini gorur",
+        "effort": 1,
+        "impact": 4
+      }
+    ],
+    "debate_content": [
+      {
+        "id": "visual_refresh",
+        "title": "Harf tasi + hedef cubugu + sade ana ekran",
+        "why": "Ilk bakista oyun dili",
+        "effort": 3,
+        "impact": 5
+      },
+      {
+        "id": "common_tr_dict",
+        "title": "Sozluk kalitesi",
+        "why": "Icerik = kelimeler",
+        "effort": 2,
+        "impact": 5
+      },
+      {
+        "id": "simplify_controls",
+        "title": "Az buton",
+        "why": "Gorsel nefes",
+        "effort": 1,
+        "impact": 4
+      }
+    ],
+    "decisions": [
+      {
+        "id": "inline_how_to_play",
+        "title": "Kural: Turkce kelime kur, hedefi gec",
+        "score": 18.0,
+        "mentions": 2,
+        "status": "approved",
+        "round": 5
+      },
+      {
+        "id": "simplify_controls",
+        "title": "Az buton",
+        "score": 17.0,
+        "mentions": 2,
+        "status": "approved",
+        "round": 5
+      },
+      {
+        "id": "common_tr_dict",
+        "title": "Sozluk kalitesi",
+        "score": 17.0,
+        "mentions": 2,
+        "status": "approved",
+        "round": 5
+      },
+      {
+        "id": "show_word_preview_score",
+        "title": "Anlik skor onizleme",
+        "score": 15.0,
+        "mentions": 2,
+        "status": "approved",
+        "round": 5
+      },
+      {
+        "id": "skip_starter_default",
+        "title": "Joker secimini atla; magazada ogren",
+        "score": 13.0,
+        "mentions": 2,
+        "status": "approved",
+        "round": 5
+      }
+    ],
+    "deferred": [
+      {
+        "id": "easier_early_targets",
+        "title": "Ilk 3 seviye daha dusuk hedef",
+        "status": "deferred"
+      },
+      {
+        "id": "visual_refresh",
+        "title": "Harf tasi + hedef cubugu + sade ana ekran",
+        "status": "deferred"
+      }
+    ]
+  }
+}
