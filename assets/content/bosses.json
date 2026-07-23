@@ -1,0 +1,51 @@
+[
+  {
+    "id": "sessiz_devriye",
+    "name": "Sessiz Devriye",
+    "description": "En az 2 sessiz harf zorunlu.",
+    "rule": "minConsonants",
+    "value": 2
+  },
+  {
+    "id": "kisa_devre",
+    "name": "Kısa Devre",
+    "description": "Kelime en fazla 4 harf olabilir.",
+    "rule": "maxLength",
+    "value": 4
+  },
+  {
+    "id": "uzun_yol",
+    "name": "Uzun Yol",
+    "description": "Kelime en az 5 harf olmalı.",
+    "rule": "minLength",
+    "value": 5
+  },
+  {
+    "id": "tek_sesli",
+    "name": "Tek Sesli",
+    "description": "Kelimede en fazla 1 sesli harf.",
+    "rule": "maxVowels",
+    "value": 1
+  },
+  {
+    "id": "ses_korosu",
+    "name": "Ses Korosu",
+    "description": "En az 2 sesli harf zorunlu.",
+    "rule": "minVowels",
+    "value": 2
+  },
+  {
+    "id": "tekil_yasa",
+    "name": "Tekil Yasa",
+    "description": "Aynı harf tekrar edemez.",
+    "rule": "noDuplicateLetters",
+    "value": 1
+  },
+  {
+    "id": "sesli_acilis",
+    "name": "Sesli Açılış",
+    "description": "Kelime sesli harfle başlamalı.",
+    "rule": "startsWithVowel",
+    "value": 1
+  }
+]

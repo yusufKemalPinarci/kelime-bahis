@@ -1,0 +1,26 @@
+---
+description: Kelime Bahis — full offline Türkçe kelime-roguelike proje kuralları
+alwaysApply: true
+---
+
+# Kelime Bahis
+
+- Tek oyunculu, **full offline** kelime-roguelike (Wordlike + Balatro ilhamı).
+- İnternet, hesap, sync, reklam, API key **yok**.
+- Dil: Türkçe UI + Türkçe sözlük + Türkçe harf torbası.
+- Stack: Flutter, Material 3, yerel state (ViewModel / ChangeNotifier).
+- Kaynak: `awesome-cursorrules` Flutter kurallarına uy; MVVM altına yakın yapı kullan.
+
+## Klasörler
+
+- `lib/models/` — veri modelleri
+- `lib/game/` — motor, skor, torba, joker
+- `lib/views/` — ekranlar ve widget'lar
+- `lib/crew/` — CrewAI-tarzı yerel multi-agent (API’siz)
+- `assets/` — sözlük ve içerik JSON
+
+## Yasaklar
+
+- CrewAI paketi / OpenAI / Gemini / herhangi bir LLM API key
+- Online kelime doğrulama
+- Pay-to-win veya zorunlu reklam

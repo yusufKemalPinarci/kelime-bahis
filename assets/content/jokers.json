@@ -1,0 +1,103 @@
+[
+  {
+    "id": "cift_sesli",
+    "name": "Çift Sesli",
+    "description": "Kelimede her sesli harf +2 puan.",
+    "kind": "vowelBonus",
+    "value": 2
+  },
+  {
+    "id": "sessiz_ordu",
+    "name": "Sessiz Ordu",
+    "description": "Her sessiz harf +2 puan.",
+    "kind": "consonantBonus",
+    "value": 2
+  },
+  {
+    "id": "uzun_soluk",
+    "name": "Uzun Soluk",
+    "description": "5+ harfli kelimelerde x1.5 çarpan.",
+    "kind": "longWordMult",
+    "value": 1.5
+  },
+  {
+    "id": "kisa_ates",
+    "name": "Kısa Ateş",
+    "description": "4 veya daha az harfte x1.4 çarpan.",
+    "kind": "shortWordMult",
+    "value": 1.4
+  },
+  {
+    "id": "tekrar_avcisi",
+    "name": "Tekrar Avcısı",
+    "description": "Aynı harften 2+ varsa +8 puan.",
+    "kind": "duplicateBonus",
+    "value": 8
+  },
+  {
+    "id": "son_harf",
+    "name": "Son Harf",
+    "description": "Kelimenin son harfi x2 puan alır.",
+    "kind": "lastLetterDouble",
+    "value": 2
+  },
+  {
+    "id": "ilk_harf",
+    "name": "İlk Harf",
+    "description": "Kelimenin ilk harfi x2 puan alır.",
+    "kind": "firstLetterDouble",
+    "value": 2
+  },
+  {
+    "id": "kisa_ve_oz",
+    "name": "Kısa ve Öz",
+    "description": "Tam 3 harfli kelimelerde +12 puan.",
+    "kind": "exactLengthBonus",
+    "value": 12,
+    "meta": 3
+  },
+  {
+    "id": "besli_bonus",
+    "name": "Beşli Bonus",
+    "description": "Tam 5 harfli kelimelerde +15 puan.",
+    "kind": "exactLengthBonus",
+    "value": 15,
+    "meta": 5
+  },
+  {
+    "id": "noktalama",
+    "name": "Nokta Atışı",
+    "description": "Her kelime skoruna +5 düz bonus.",
+    "kind": "flatBonus",
+    "value": 5
+  },
+  {
+    "id": "nadir_avci",
+    "name": "Nadir Avcı",
+    "description": "J Ğ F Ö V Ü Ş Ç harfleri +6'şar.",
+    "kind": "rareLetterBonus",
+    "value": 6
+  },
+  {
+    "id": "cift_bonus",
+    "name": "Çift Bonus",
+    "description": "Her kelimeye +8 düz bonus.",
+    "kind": "flatBonus",
+    "value": 8
+  },
+  {
+    "id": "orta_harf",
+    "name": "Orta Harf",
+    "description": "Kelimenin orta harfi(leri) x2 puan alır.",
+    "kind": "middleLetterDouble",
+    "value": 2
+  },
+  {
+    "id": "sessiz_yigin",
+    "name": "Sessiz Yığın",
+    "description": "En az 3 sessiz harf varsa +14 puan.",
+    "kind": "consonantStack",
+    "value": 14,
+    "meta": 3
+  }
+]
