@@ -46,7 +46,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'Harflerle Türkçe kelime kur.\nHedefi geç, joker topla.',
+                      '5 harfli Türkçe kelime kur.\nHedefi geç, joker topla.',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: GameColors.muted,
                             height: 1.45,
@@ -74,7 +74,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            '1. Harflere sırayla dokun\n'
+                            '1. Tam 5 harf seç (sırayla dokun)\n'
                             '2. Geçerli bir Türkçe kelime çıkar\n'
                             '3. OYNA — skoru hedefe ulaştır',
                             style: TextStyle(
@@ -87,7 +87,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      '${controller.dictionary?.size ?? 0} kelime · '
+                      '${controller.dictionary?.size ?? 0} × 5 harfli kelime · '
                       'rekor seviye ${controller.stats.bestLevel}',
                       style: const TextStyle(color: GameColors.muted, fontSize: 13),
                     ),

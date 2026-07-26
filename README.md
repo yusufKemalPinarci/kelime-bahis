@@ -35,10 +35,12 @@ Artı proje kuralları: `project-kelime-bahis.mdc`, `crew-orchestration.mdc`
 
 ## Oynanış
 
-1. Elinden harf seç, Türkçe kelime kur  
+1. Elinden **tam 5 harf** seç, Türkçe kelime kur  
 2. Joker’lerle skor çarpanı üret  
 3. Hedefi geç, mağazadan joker al  
 4. Her 4. seviyede boss kısıtı  
+
+Sözlük: `assets/dictionary/tr_words.txt` (~5.5k × 5 harfli kelime, ~36 KB, offline).
 
 ### Modlar
 

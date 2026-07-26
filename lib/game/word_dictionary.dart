@@ -1,9 +1,11 @@
 import 'turkish.dart';
+import 'word_length.dart';
 
 class WordDictionary {
   WordDictionary(Iterable<String> words)
       : _words = {
-          for (final w in words) normalizeTr(w),
+          for (final w in words)
+            if (normalizeTr(w).length == kWordLength) normalizeTr(w),
         };
 
   final Set<String> _words;
@@ -13,7 +15,11 @@ class WordDictionary {
 
   int get size => _words.length;
 
-  bool contains(String word) => _words.contains(normalizeTr(word));
+  bool contains(String word) {
+    final n = normalizeTr(word);
+    if (n.length != kWordLength) return false;
+    return _words.contains(n);
+  }
 
   void buildAnagramIndex() {
     _bySignature.clear();
@@ -28,10 +34,9 @@ class WordDictionary {
     return chars.join();
   }
 
-  /// Finds one playable word using a multiset of hand letters (offline).
+  /// Finds one playable [kWordLength]-letter word from hand letters (offline).
   String? findPlayableWord(
     Iterable<String> handLetters, {
-    int minLength = 3,
     bool Function(String word)? validate,
   }) {
     final counts = <String, int>{};
@@ -41,12 +46,15 @@ class WordDictionary {
     }
 
     String? best;
+    var bestScore = -1;
     for (final w in _words) {
-      if (w.length < minLength) continue;
       if (!_canSpell(w, counts)) continue;
       if (validate != null && !validate(w)) continue;
-      if (best == null || w.length > best.length) {
+      // Prefer higher letter diversity for hints.
+      final score = w.split('').toSet().length;
+      if (best == null || score > bestScore) {
         best = w;
+        bestScore = score;
       }
     }
     return best;

@@ -6,6 +6,7 @@ alwaysApply: true
 # Kelime Bahis
 
 - Tek oyunculu, **full offline** kelime-roguelike (Wordlike + Balatro ilhamı).
+- Oyun modu: **yalnızca 5 harfli** Türkçe kelimeler (`assets/dictionary/tr_words.txt`).
 - İnternet, hesap, sync, reklam, API key **yok**.
 - Dil: Türkçe UI + Türkçe sözlük + Türkçe harf torbası.
 - Stack: Flutter, Material 3, yerel state (ViewModel / ChangeNotifier).
@@ -16,7 +17,7 @@ alwaysApply: true
 - `lib/models/` — veri modelleri
 - `lib/game/` — motor, skor, torba, joker
 - `lib/views/` — ekranlar ve widget'lar
-- `lib/crew/` — CrewAI-tarzı yerel multi-agent (API’siz)
+- `lib/crew/` — CrewAI-tarzı yerel multi-agent (API’siz); aşama sırası: `lib/crew/pipeline.dart` + `AGENTS.md`
 - `assets/` — sözlük ve içerik JSON
 
 ## Yasaklar

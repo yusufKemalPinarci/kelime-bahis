@@ -1,32 +1,31 @@
 ---
-description: CrewAI-tarzı yerel agent işbirliği — API’siz crew orkestrasyonu
-globs: lib/crew/**/*.dart, scripts/**/*.dart, AGENTS.md
-alwaysApply: false
+description: Aşama→agent pipeline — sistematik crew orkestrasyonu (API’siz)
+alwaysApply: true
 ---
 
-# Yerel Crew (CrewAI ilhamı, API yok)
+# Crew orkestrasyonu
 
-CrewAI’deki `Agent` → `Task` → `Crew.kickoff()` modelini taklit et; dış LLM çağırma.
+Kaynak: `AGENTS.md` + `lib/crew/pipeline.dart`. LLM/API yok.
 
-## Roller
+## Aşama sırası (zorunlu)
 
-1. **DesignerAgent** — mekanik ve seviye hedefleri
-2. **DictionaryAgent** — Türkçe kelime listesi doğrulama/filtre
-3. **BalanceAgent** — harf puanı, hedef skor, joker gücü
-4. **ContentAgent** — boss kuralları, mağaza eşyaları, metinler
+```
+0 debate → 1 design → 2 dictionary → 3 balance → 4 content → 5 engine → 6 ui
+```
 
-## Süreç
+| Aşama | Agent | Sadece bunlar |
+|-------|-------|---------------|
+| debate | Facilitator | `crew/output/debate_decisions.json` |
+| design | DesignerAgent | döngü parametreleri, `game_controller` akış kuralları |
+| dictionary | DictionaryAgent | `assets/dictionary/`, `word_dictionary.dart`, `turkish.dart` |
+| balance | BalanceAgent | `scoring.dart`, `letter_bag.dart`, hedefler |
+| content | ContentAgent | `assets/content/` |
+| engine | Designer + Balance | `lib/game/`, `lib/models/` |
+| ui | Content + Designer | `lib/views/`, `lib/main.dart` |
 
-- Varsayılan: **sequential** (sıralı). Her agent çıktıyı bir sonrakine `CrewContext` ile aktarır.
-- Sonuçlar `assets/content/` veya `crew/output/` altına yazılır.
-- Yeni içerik için `dart run scripts/run_crew.dart` çalıştır.
+## Kurallar
 
-## Cursor’da çalışma
-
-Büyük bir özellik istendiğinde:
-1. `dart run scripts/run_debate.dart` — agent tartışması + onaylı backlog
-2. Onaylanan `id`’leri uygula
-3. İstersen `dart run scripts/run_crew.dart` içerik senkronu
-
-Agent sırası (içerik): Designer → Dictionary → Balance → Content  
-Agent sırası (tartışma): Designer → Dictionary → Balance → Content → Facilitator
+- Bir aşamada yalnızca o satırdaki agent’ın `owns` yollarına yaz.
+- `design` çıktısı olmadan `balance` hedef üretme; `balance` olmadan joker çarpanı şişirme.
+- İçerik: `dart run scripts/run_crew.dart` (1–4). Backlog: `run_debate.dart` (0).
+- Özellik isteğinde önce debate (veya mevcut onaylı id); sonra sırayla uygula.
