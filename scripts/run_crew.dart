@@ -17,7 +17,10 @@ Future<void> main(List<String> args) async {
     outDir.createSync(recursive: true);
   }
 
-  final report = result.toJson();
+  final report = {
+    ...result.toJson(),
+    'pipeline': pipelineToJson(),
+  };
   final file = File('crew/output/crew_report.json');
   await file.writeAsString(
     const JsonEncoder.withIndent('  ').convert(report),
@@ -37,9 +40,10 @@ Future<void> main(List<String> args) async {
     );
   }
 
-  stdout.writeln('=== KelimeBahisCrew tamamlandı ===');
+  stdout.writeln('=== KelimeBahisCrew tamamlandı (aşama 1–4) ===');
   for (final r in result.results) {
-    stdout.writeln('[${r.agentRole}] ${r.taskName}: ${r.output}');
+    final stage = r.stage?.name ?? '?';
+    stdout.writeln('[aşama $stage | ${r.agentRole}] ${r.taskName}: ${r.output}');
   }
   stdout.writeln('Rapor: ${file.path}');
 }

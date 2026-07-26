@@ -64,7 +64,7 @@ class _GameScreenState extends State<GameScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'Türkçe kelime kur · hedefi geç',
+              '5 harfli Türkçe kelime kur · hedefi geç',
               style: TextStyle(
                 color: GameColors.muted,
                 fontWeight: FontWeight.w600,

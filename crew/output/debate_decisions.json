@@ -3,32 +3,38 @@
     {
       "task": "designer_pitch",
       "agent": "Tasarimci",
-      "output": "Tasarimci: sadelik 3 oneri"
+      "output": "Tasarimci: sadelik 3 oneri",
+      "stage": "debate"
     },
     {
       "task": "dictionary_pitch",
       "agent": "Sozluk",
-      "output": "Sozluk: 3 oneri"
+      "output": "Sozluk: 3 oneri",
+      "stage": "debate"
     },
     {
       "task": "balance_pitch",
       "agent": "Denge",
-      "output": "Denge: 3 oneri"
+      "output": "Denge: 3 oneri",
+      "stage": "debate"
     },
     {
       "task": "content_pitch",
       "agent": "Icerik/Gorsel",
-      "output": "Icerik: 3 oneri"
+      "output": "Icerik: 3 oneri",
+      "stage": "debate"
     },
     {
       "task": "facilitate",
       "agent": "Facilitator",
-      "output": "Tur5: inline_how_to_play, simplify_controls, common_tr_dict, show_word_preview_score, skip_starter_default"
+      "output": "Tur5: ",
+      "stage": "debate"
     }
   ],
   "context": {
     "current_task": "facilitate",
-    "task_description": "Oyla ve backlog onayla",
+    "task_description": "[aşama 0:debate] Oyla ve backlog onayla",
+    "current_stage": "debate",
     "debate_designer": [
       {
         "id": "inline_how_to_play",
@@ -52,7 +58,7 @@
         "impact": 4
       }
     ],
-    "last_output": "Tur5: inline_how_to_play, simplify_controls, common_tr_dict, show_word_preview_score, skip_starter_default",
+    "last_output": "Tur5: ",
     "debate_dictionary": [
       {
         "id": "common_tr_dict",
@@ -122,59 +128,7 @@
         "impact": 4
       }
     ],
-    "decisions": [
-      {
-        "id": "inline_how_to_play",
-        "title": "Kural: Turkce kelime kur, hedefi gec",
-        "score": 18.0,
-        "mentions": 2,
-        "status": "approved",
-        "round": 5
-      },
-      {
-        "id": "simplify_controls",
-        "title": "Az buton",
-        "score": 17.0,
-        "mentions": 2,
-        "status": "approved",
-        "round": 5
-      },
-      {
-        "id": "common_tr_dict",
-        "title": "Sozluk kalitesi",
-        "score": 17.0,
-        "mentions": 2,
-        "status": "approved",
-        "round": 5
-      },
-      {
-        "id": "show_word_preview_score",
-        "title": "Anlik skor onizleme",
-        "score": 15.0,
-        "mentions": 2,
-        "status": "approved",
-        "round": 5
-      },
-      {
-        "id": "skip_starter_default",
-        "title": "Joker secimini atla; magazada ogren",
-        "score": 13.0,
-        "mentions": 2,
-        "status": "approved",
-        "round": 5
-      }
-    ],
-    "deferred": [
-      {
-        "id": "easier_early_targets",
-        "title": "Ilk 3 seviye daha dusuk hedef",
-        "status": "deferred"
-      },
-      {
-        "id": "visual_refresh",
-        "title": "Harf tasi + hedef cubugu + sade ana ekran",
-        "status": "deferred"
-      }
-    ]
+    "decisions": [],
+    "deferred": []
   }
 }

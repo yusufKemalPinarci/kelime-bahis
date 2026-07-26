@@ -6,10 +6,12 @@ import '../context.dart';
 Agent createDictionaryAgent() {
   return Agent(
     role: 'Sözlük Uzmanı',
-    goal: 'Türkçe kelime listesini doğrula ve oyun için filtrele',
+    goal:
+        '[aşama dictionary] tr_words.txt’yi filtrele: tam 5 harf, yalnızca '
+        'Türkçe harf; offline WordDictionary ile uyumlu tut',
     backstory:
-        'Offline sözlük bakımı yapar. En az 3 harfli, yalnızca Türkçe harf '
-        'içeren kelimeleri kabul eder. Harici API yok.',
+        'design sonrası, balance öncesi çalışır. Offline sözlük bakımı; '
+        'harici API yok. Oyun yalnızca 5 harfli kelime kabul eder.',
     execute: (CrewContext ctx) async {
       final path = ctx.get<String>('dictionaryPath') ??
           'assets/dictionary/tr_words.txt';
@@ -23,7 +25,7 @@ Agent createDictionaryAgent() {
       final raw = await file.readAsLines();
       final words = raw
           .map((w) => w.trim().toLocaleLowerCaseTr())
-          .where((w) => w.length >= 3)
+          .where((w) => w.length == 5)
           .where(_isTurkishWord)
           .toSet()
           .toList()
@@ -31,7 +33,8 @@ Agent createDictionaryAgent() {
 
       ctx.set('wordCount', words.length);
       ctx.set('wordsSample', words.take(12).toList());
-      return 'Sözlük hazır: ${words.length} kelime (min 3 harf, TR harfler)';
+      ctx.set('wordLength', 5);
+      return 'Sözlük hazır: ${words.length} kelime (tam 5 harf, TR harfler)';
     },
   );
 }
