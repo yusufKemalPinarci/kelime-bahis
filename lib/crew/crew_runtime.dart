@@ -1,5 +1,6 @@
 import 'agent.dart';
 import 'context.dart';
+import 'pipeline.dart';
 import 'task.dart';
 
 enum CrewProcess { sequential }
@@ -9,16 +10,19 @@ class TaskResult {
     required this.taskName,
     required this.agentRole,
     required this.output,
+    this.stage,
   });
 
   final String taskName;
   final String agentRole;
   final String output;
+  final CrewStage? stage;
 
   Map<String, dynamic> toJson() => {
         'task': taskName,
         'agent': agentRole,
         'output': output,
+        if (stage != null) 'stage': stage!.name,
       };
 }
 
@@ -58,12 +62,16 @@ class Crew {
     for (final task in tasks) {
       context.set('current_task', task.name);
       context.set('task_description', task.description);
+      if (task.stage != null) {
+        context.set('current_stage', task.stage!.name);
+      }
       final output = await task.agent.execute(context);
       results.add(
         TaskResult(
           taskName: task.name,
           agentRole: task.agent.role,
           output: output,
+          stage: task.stage,
         ),
       );
       context.set('last_output', output);

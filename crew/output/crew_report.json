@@ -3,30 +3,36 @@
     {
       "task": "design_loop",
       "agent": "Oyun Tasarımcısı",
-      "output": "Tasarım sabitlendi: el=8, tur=4, baz hedef=40"
+      "output": "Tasarım sabitlendi: el=8, tur=4, baz hedef=40",
+      "stage": "design"
     },
     {
       "task": "prepare_dictionary",
       "agent": "Sözlük Uzmanı",
-      "output": "Sözlük hazır: 1229 kelime (min 3 harf, TR harfler)"
+      "output": "Sözlük hazır: 5555 kelime (tam 5 harf, TR harfler)",
+      "stage": "dictionary"
     },
     {
       "task": "balance_economy",
       "agent": "Denge Mühendisi",
-      "output": "Denge hazır: 29 harf puanı, hedefler=[40, 54, 73, 98, 133, 179, 242, 327]"
+      "output": "Denge hazır: 29 harf puanı, hedefler=[40, 54, 73, 98, 133, 179, 242, 327]",
+      "stage": "balance"
     },
     {
       "task": "generate_content",
       "agent": "İçerik Üreticisi",
-      "output": "İçerik senkron: 12 joker, 7 boss"
+      "output": "İçerik senkron: 14 joker, 7 boss",
+      "stage": "content"
     }
   ],
   "context": {
     "dictionaryPath": "assets/dictionary/tr_words.txt",
     "current_task": "generate_content",
-    "task_description": "Joker ve boss içeriklerini üret",
+    "task_description": "[aşama 4:content] Joker/boss JSON, Türkçe isim ve kısıt metinleri",
+    "current_stage": "content",
     "design": {
       "handSize": 8,
+      "wordLength": 5,
       "startingBagSize": 60,
       "maxHandsPerLevel": 4,
       "maxDiscardsPerLevel": 2,
@@ -35,22 +41,23 @@
       "targetScoreGrowth": 1.35,
       "shopJokerChoices": 3
     },
-    "last_output": "İçerik senkron: 12 joker, 7 boss",
-    "wordCount": 1229,
+    "last_output": "İçerik senkron: 14 joker, 7 boss",
+    "wordCount": 5555,
     "wordsSample": [
-      "abajur",
-      "abanmak",
-      "abartı",
-      "abdest",
-      "abi",
-      "absürt",
-      "ada",
-      "adalet",
-      "adam",
-      "aday",
-      "adliye",
-      "adım"
+      "abacı",
+      "abadi",
+      "abalı",
+      "abana",
+      "abani",
+      "abara",
+      "abaza",
+      "abaşo",
+      "abbas",
+      "abdal",
+      "abece",
+      "abeci"
     ],
+    "wordLength": 5,
     "letterPoints": {
       "a": 1,
       "b": 3,
@@ -108,18 +115,18 @@
         "value": 2
       },
       {
-        "id": "uzun_soluk",
-        "name": "Uzun Soluk",
-        "description": "5+ harfli kelimelerde x1.5 çarpan.",
+        "id": "besli_carpan",
+        "name": "Beşli Çarpan",
+        "description": "Her 5 harfli kelimede x1.4 çarpan.",
         "kind": "longWordMult",
-        "value": 1.5
+        "value": 1.4
       },
       {
-        "id": "kisa_ates",
-        "name": "Kısa Ateş",
-        "description": "4 veya daha az harfte x1.4 çarpan.",
+        "id": "cift_vurus",
+        "name": "Çift Vuruş",
+        "description": "Aynı harften 2+ varsa x1.35 çarpan.",
         "kind": "shortWordMult",
-        "value": 1.4
+        "value": 1.35
       },
       {
         "id": "tekrar_avcisi",
@@ -143,20 +150,19 @@
         "value": 2
       },
       {
-        "id": "kisa_ve_oz",
-        "name": "Kısa ve Öz",
-        "description": "Tam 3 harfli kelimelerde +12 puan.",
+        "id": "orta_ates",
+        "name": "Orta Ateş",
+        "description": "Orta harf varken +12 puan.",
         "kind": "exactLengthBonus",
         "value": 12,
-        "meta": 3
+        "meta": 5
       },
       {
         "id": "besli_bonus",
         "name": "Beşli Bonus",
-        "description": "Tam 5 harfli kelimelerde +15 puan.",
-        "kind": "exactLengthBonus",
-        "value": 15,
-        "meta": 5
+        "description": "Her kelimeye +10 düz bonus.",
+        "kind": "flatBonus",
+        "value": 10
       },
       {
         "id": "noktalama",
@@ -178,36 +184,37 @@
         "description": "Her kelimeye +8 düz bonus.",
         "kind": "flatBonus",
         "value": 8
+      },
+      {
+        "id": "orta_harf",
+        "name": "Orta Harf",
+        "description": "Kelimenin orta harfi x2 puan alır.",
+        "kind": "middleLetterDouble",
+        "value": 2
+      },
+      {
+        "id": "sessiz_yigin",
+        "name": "Sessiz Yığın",
+        "description": "En az 3 sessiz harf varsa +14 puan.",
+        "kind": "consonantStack",
+        "value": 14,
+        "meta": 3
       }
     ],
     "bosses": [
       {
         "id": "sessiz_devriye",
         "name": "Sessiz Devriye",
-        "description": "En az 2 sessiz harf zorunlu.",
+        "description": "En az 3 sessiz harf zorunlu.",
         "rule": "minConsonants",
-        "value": 2
-      },
-      {
-        "id": "kisa_devre",
-        "name": "Kısa Devre",
-        "description": "Kelime en fazla 4 harf olabilir.",
-        "rule": "maxLength",
-        "value": 4
-      },
-      {
-        "id": "uzun_yol",
-        "name": "Uzun Yol",
-        "description": "Kelime en az 5 harf olmalı.",
-        "rule": "minLength",
-        "value": 5
+        "value": 3
       },
       {
         "id": "tek_sesli",
         "name": "Tek Sesli",
-        "description": "Kelimede en fazla 1 sesli harf.",
+        "description": "Kelimede en fazla 2 sesli harf.",
         "rule": "maxVowels",
-        "value": 1
+        "value": 2
       },
       {
         "id": "ses_korosu",
@@ -229,6 +236,114 @@
         "description": "Kelime sesli harfle başlamalı.",
         "rule": "startsWithVowel",
         "value": 1
+      },
+      {
+        "id": "sert_cekirdek",
+        "name": "Sert Çekirdek",
+        "description": "En az 4 sessiz harf zorunlu.",
+        "rule": "minConsonants",
+        "value": 4
+      },
+      {
+        "id": "dar_nefes",
+        "name": "Dar Nefes",
+        "description": "Kelimede en fazla 1 sesli harf.",
+        "rule": "maxVowels",
+        "value": 1
+      }
+    ]
+  },
+  "pipeline": {
+    "process": "sequential",
+    "stages": [
+      {
+        "order": 0,
+        "stage": "debate",
+        "agent": "Facilitator (+ Designer, Sözlük, Denge, İçerik)",
+        "task": "facilitate",
+        "goal": "Özellik önerilerini oyla; onaylı backlog üret",
+        "owns": [
+          "crew/output/debate_decisions.json",
+          "lib/crew/agents/debate_agents.dart"
+        ],
+        "produces": "approved feature id listesi",
+        "script": "dart run scripts/run_debate.dart"
+      },
+      {
+        "order": 1,
+        "stage": "design",
+        "agent": "Oyun Tasarımcısı",
+        "task": "design_loop",
+        "goal": "El boyutu, tur/atım hakkı, seviye ritmi, mağaza seçim sayısı",
+        "owns": [
+          "lib/crew/agents/designer_agent.dart",
+          "lib/game/game_controller.dart",
+          "lib/views/screens/home_screen.dart"
+        ],
+        "produces": "design map (handSize, maxHands, targets baz)"
+      },
+      {
+        "order": 2,
+        "stage": "dictionary",
+        "agent": "Sözlük Uzmanı",
+        "task": "prepare_dictionary",
+        "goal": "tr_words filtrele; tam 5 harf; yalnızca TR harfler; offline doğrulama",
+        "owns": [
+          "assets/dictionary/",
+          "lib/game/word_dictionary.dart",
+          "lib/game/turkish.dart",
+          "lib/crew/agents/dictionary_agent.dart"
+        ],
+        "produces": "wordCount + geçerli kelime kümesi"
+      },
+      {
+        "order": 3,
+        "stage": "balance",
+        "agent": "Denge Mühendisi",
+        "task": "balance_economy",
+        "goal": "Harf puanları, seviye hedefleri, joker çarpan üst sınırları",
+        "owns": [
+          "lib/game/scoring.dart",
+          "lib/game/letter_bag.dart",
+          "lib/crew/agents/balance_agent.dart"
+        ],
+        "produces": "letterPoints + levelTargets"
+      },
+      {
+        "order": 4,
+        "stage": "content",
+        "agent": "İçerik Üreticisi",
+        "task": "generate_content",
+        "goal": "Joker/boss JSON, Türkçe isim ve kısıt metinleri",
+        "owns": [
+          "assets/content/",
+          "lib/crew/agents/content_agent.dart"
+        ],
+        "produces": "jokers.json + bosses.json"
+      },
+      {
+        "order": 5,
+        "stage": "engine",
+        "agent": "Oyun Tasarımcısı + Denge Mühendisi",
+        "task": "wire_engine",
+        "goal": "design/balance/content çıktısını GameController ve skor motoruna bağla",
+        "owns": [
+          "lib/game/",
+          "lib/models/"
+        ],
+        "produces": "çalışan offline oyun döngüsü"
+      },
+      {
+        "order": 6,
+        "stage": "ui",
+        "agent": "İçerik Üreticisi + Oyun Tasarımcısı",
+        "task": "polish_ui",
+        "goal": "Material 3 ekranlar; tek CTA; hedef/skor okunabilirliği",
+        "owns": [
+          "lib/views/",
+          "lib/main.dart"
+        ],
+        "produces": "home + game ekranları"
       }
     ]
   }

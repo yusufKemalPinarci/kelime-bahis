@@ -10,6 +10,7 @@ import 'local_stats.dart';
 import 'scoring.dart';
 import 'turkish.dart';
 import 'word_dictionary.dart';
+import 'word_length.dart';
 
 enum RunPhase { starter, playing, shop, won, lost }
 
@@ -52,14 +53,14 @@ class GameController extends ChangeNotifier {
   RunMode mode = RunMode.classic;
   DailySeed? dailySeed;
   int? runSeed;
-  String message = 'Kelime kur, hedefi geç.';
+  String message = '5 harfli Türkçe kelime kur, hedefi geç.';
   String? hintWord;
   int? hintEstimatedScore;
   ScoreBreakdown? lastScore;
   int lastEfficiencyBonus = 0;
   bool ready = false;
 
-  static const handSize = 8;
+  static const handSize = kWordLength;
 
   bool get isBossLevel => !endless && level % 4 == 0;
 
@@ -87,7 +88,8 @@ class GameController extends ChangeNotifier {
     final words = wordsRaw
         .split(RegExp(r'\r?\n'))
         .map((w) => w.trim())
-        .where((w) => w.isNotEmpty);
+        .where((w) => w.isNotEmpty)
+        .where((w) => normalizeTr(w).length == kWordLength);
     dictionary = WordDictionary(words);
 
     final jokersRaw = await rootBundle.loadString('assets/content/jokers.json');
@@ -139,8 +141,8 @@ class GameController extends ChangeNotifier {
     // Tur 5: starter atlanır — joker mağazada öğrenilir
     phase = RunPhase.playing;
     message = mode == RunMode.daily
-        ? 'Günlük · Türkçe kelime kur, hedefi geç'
-        : 'Türkçe kelime kur · hedefi geç';
+        ? 'Günlük · 5 harfli Türkçe kelime kur'
+        : '5 harfli Türkçe kelime kur · hedefi geç';
     notifyListeners();
   }
 
@@ -151,7 +153,7 @@ class GameController extends ChangeNotifier {
     }
     starterOffers.clear();
     phase = RunPhase.playing;
-    message = 'Türkçe kelime kur · hedefi geç';
+    message = '5 harfli Türkçe kelime kur · hedefi geç';
     notifyListeners();
   }
 
@@ -210,8 +212,10 @@ class GameController extends ChangeNotifier {
     if (phase != RunPhase.playing) return;
     if (selected.contains(tile)) {
       selected.remove(tile);
-    } else {
+    } else if (selected.length < kWordLength) {
       selected.add(tile);
+    } else {
+      message = 'Tam $kWordLength harf seç (fazlası yok).';
     }
     notifyListeners();
   }
@@ -254,9 +258,9 @@ class GameController extends ChangeNotifier {
 
   String get selectedWord => selected.map((t) => t.letter).join();
 
-  /// Seçili harflerin anlık skor önizlemesi (geçerli kelimeyse).
+  /// Seçili harflerin anlık skor önizlemesi (geçerli 5 harfli kelimeyse).
   int? get livePreviewScore {
-    if (dictionary == null || selected.length < 3) return null;
+    if (dictionary == null || selected.length != kWordLength) return null;
     final word = normalizeTr(selectedWord);
     if (!dictionary!.contains(word)) return null;
     if (playedThisLevel.contains(word)) return null;
@@ -305,8 +309,8 @@ class GameController extends ChangeNotifier {
     }
 
     final word = normalizeTr(selectedWord);
-    if (word.length < 3) {
-      message = 'Kelime en az 3 harf olmalı.';
+    if (word.length != kWordLength) {
+      message = 'Kelime tam $kWordLength harf olmalı.';
       HapticFeedback.heavyImpact();
       notifyListeners();
       return;

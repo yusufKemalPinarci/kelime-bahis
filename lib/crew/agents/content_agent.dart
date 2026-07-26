@@ -7,10 +7,12 @@ import '../context.dart';
 Agent createContentAgent() {
   return Agent(
     role: 'İçerik Üreticisi',
-    goal: 'Boss kısıtları ve joker metinlerini üret',
+    goal:
+        '[aşama content] jokers.json ve bosses.json senkronla; Türkçe isim '
+        've kısıt metinlerini balance sınırlarına uyumlu tut',
     backstory:
-        'Offline içerik paketleri yazar. Türkçe tema, kumar yok, '
-        'eğlence odaklı joker isimleri kullanır.',
+        'balance sonrası çalışır; engine/ui’den önce içerik paketini kilitler. '
+        'Offline; kumar yok; eğlence odaklı joker isimleri.',
     execute: (CrewContext ctx) async {
       // Prefer committed asset files so crew sync does not shrink content.
       final jokersFile = File('assets/content/jokers.json');

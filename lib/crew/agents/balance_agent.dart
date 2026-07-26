@@ -4,10 +4,12 @@ import '../context.dart';
 Agent createBalanceAgent() {
   return Agent(
     role: 'Denge Mühendisi',
-    goal: 'Harf puanları ve joker çarpanlarını dengele',
+    goal:
+        '[aşama balance] design.baseTargetScore’dan levelTargets üret; '
+        'harf puanı ve joker çarpan üst sınırlarını dengele',
     backstory:
-        'Türkçe Scrabble frekansına yakın puanlar kullanır; jokerlerin '
-        'oyunu kırmamasını hedefler. LLM yok, tablolarla çalışır.',
+        'dictionary sonrası, content öncesi çalışır. Türkçe Scrabble’a yakın '
+        'puanlar; LLM yok, tablolarla çalışır.',
     execute: (CrewContext ctx) async {
       final letterPoints = <String, int>{
         'a': 1,
