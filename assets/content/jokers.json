@@ -14,18 +14,18 @@
     "value": 2
   },
   {
-    "id": "uzun_soluk",
-    "name": "Uzun Soluk",
-    "description": "5+ harfli kelimelerde x1.5 çarpan.",
+    "id": "besli_carpan",
+    "name": "Beşli Çarpan",
+    "description": "Her 5 harfli kelimede x1.4 çarpan.",
     "kind": "longWordMult",
-    "value": 1.5
+    "value": 1.4
   },
   {
-    "id": "kisa_ates",
-    "name": "Kısa Ateş",
-    "description": "4 veya daha az harfte x1.4 çarpan.",
+    "id": "cift_vurus",
+    "name": "Çift Vuruş",
+    "description": "Aynı harften 2+ varsa x1.35 çarpan.",
     "kind": "shortWordMult",
-    "value": 1.4
+    "value": 1.35
   },
   {
     "id": "tekrar_avcisi",
@@ -49,20 +49,19 @@
     "value": 2
   },
   {
-    "id": "kisa_ve_oz",
-    "name": "Kısa ve Öz",
-    "description": "Tam 3 harfli kelimelerde +12 puan.",
+    "id": "orta_ates",
+    "name": "Orta Ateş",
+    "description": "Orta harf varken +12 puan.",
     "kind": "exactLengthBonus",
     "value": 12,
-    "meta": 3
+    "meta": 5
   },
   {
     "id": "besli_bonus",
     "name": "Beşli Bonus",
-    "description": "Tam 5 harfli kelimelerde +15 puan.",
-    "kind": "exactLengthBonus",
-    "value": 15,
-    "meta": 5
+    "description": "Her kelimeye +10 düz bonus.",
+    "kind": "flatBonus",
+    "value": 10
   },
   {
     "id": "noktalama",
@@ -88,7 +87,7 @@
   {
     "id": "orta_harf",
     "name": "Orta Harf",
-    "description": "Kelimenin orta harfi(leri) x2 puan alır.",
+    "description": "Kelimenin orta harfi x2 puan alır.",
     "kind": "middleLetterDouble",
     "value": 2
   },

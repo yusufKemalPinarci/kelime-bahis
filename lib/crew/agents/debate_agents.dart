@@ -173,8 +173,8 @@ Agent createDebateContentAgent() {
 Agent createFacilitatorAgent() {
   return Agent(
     role: 'Facilitator',
-    goal: 'Sadelik turunu onayla',
-    backstory: 'API yok; skorla karar.',
+    goal: '[aşama debate] Önerileri skorla; en fazla 5 approved backlog id üret',
+    backstory: 'API yok; impact/effort ile karar. design aşamasından önce biter.',
     execute: (CrewContext ctx) async {
       final shipped = {...kShippedFeatureIds};
       final buckets = [

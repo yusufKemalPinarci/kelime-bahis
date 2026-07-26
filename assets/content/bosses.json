@@ -2,30 +2,16 @@
   {
     "id": "sessiz_devriye",
     "name": "Sessiz Devriye",
-    "description": "En az 2 sessiz harf zorunlu.",
+    "description": "En az 3 sessiz harf zorunlu.",
     "rule": "minConsonants",
-    "value": 2
-  },
-  {
-    "id": "kisa_devre",
-    "name": "Kısa Devre",
-    "description": "Kelime en fazla 4 harf olabilir.",
-    "rule": "maxLength",
-    "value": 4
-  },
-  {
-    "id": "uzun_yol",
-    "name": "Uzun Yol",
-    "description": "Kelime en az 5 harf olmalı.",
-    "rule": "minLength",
-    "value": 5
+    "value": 3
   },
   {
     "id": "tek_sesli",
     "name": "Tek Sesli",
-    "description": "Kelimede en fazla 1 sesli harf.",
+    "description": "Kelimede en fazla 2 sesli harf.",
     "rule": "maxVowels",
-    "value": 1
+    "value": 2
   },
   {
     "id": "ses_korosu",
@@ -46,6 +32,20 @@
     "name": "Sesli Açılış",
     "description": "Kelime sesli harfle başlamalı.",
     "rule": "startsWithVowel",
+    "value": 1
+  },
+  {
+    "id": "sert_cekirdek",
+    "name": "Sert Çekirdek",
+    "description": "En az 4 sessiz harf zorunlu.",
+    "rule": "minConsonants",
+    "value": 4
+  },
+  {
+    "id": "dar_nefes",
+    "name": "Dar Nefes",
+    "description": "Kelimede en fazla 1 sesli harf.",
+    "rule": "maxVowels",
     "value": 1
   }
 ]
