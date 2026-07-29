@@ -1,0 +1,30 @@
+# Kelime Bahis blocklist — satır başına bir kelime (# yorum)
+# Element / kısaltma 2-harfler allowlist dışı zaten elenir; yine de not düşülür.
+bh
+bk
+cb
+cd
+cf
+zn
+zr
+yb
+au
+dy
+ds
+# Seed typo / junk
+evevi
+# Açık obscure / ideoloji (oyun güveni)
+aryanizm
+leninist
+nazizm
+neonazi
+hitlerci
+porno
+# Akademik / lojik nadir
+ebussuut
+aybeay
+ahzıkabz
+arziyat
+ayniyat
+enfraruj
+didingen

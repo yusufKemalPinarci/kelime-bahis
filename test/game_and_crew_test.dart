@@ -6,14 +6,25 @@ import 'package:kelime_bahis/game/word_dictionary.dart';
 import 'package:kelime_bahis/game/word_length.dart';
 
 void main() {
-  test('sözlük yalnızca 5 harfli kelimeyi tutar', () {
-    final d = WordDictionary(['elma', 'armut', 'kitap', 'kalem', 'ev']);
+  test('sözlük 2–8 harfli kelimeyi tutar', () {
+    final d = WordDictionary(['elma', 'armut', 'kitap', 'kalem', 'ev', 'çay', 'x']);
     expect(d.contains('kitap'), isTrue);
     expect(d.contains('kalem'), isTrue);
-    expect(d.contains('armut'), isTrue);
-    expect(d.contains('elma'), isFalse);
+    expect(d.contains('elma'), isTrue);
+    expect(d.contains('ev'), isTrue);
+    expect(d.contains('çay'), isTrue);
+    expect(d.contains('x'), isFalse);
     expect(d.contains('xyzab'), isFalse);
-    expect(d.size, 3);
+    expect(d.size, 6);
+  });
+
+  test('uzunluk çarpanı kısa kelimeyi cezalandırır', () {
+    expect(lengthMultiplier(2), 0.5);
+    expect(lengthMultiplier(8), greaterThan(lengthMultiplier(5)));
+    final short = scoreWord(word: 'su', jokers: const []);
+    final mid = scoreWord(word: 'kalem', jokers: const []);
+    expect(mid.total, greaterThan(short.total));
+    expect(short.notes.any((n) => n.contains('Uzunluk')), isTrue);
   });
 
   test('skor joker ile artar', () {
@@ -71,19 +82,112 @@ void main() {
     expect(boss.validate('kalem'), isNull);
   });
 
-  test('anagram soft hint 5 harfli bulur', () {
-    final d = WordDictionary(['elma', 'mal', 'kitap', 'kalem']);
-    final word = d.findPlayableWord(['k', 'a', 'l', 'e', 'm', 't', 'i']);
+  test('boss min/max uzunluk', () {
+    const minBoss = BossModifier(
+      id: 'm',
+      name: 'Uzun',
+      description: '',
+      rule: BossRule.minLength,
+      value: 5,
+    );
+    const maxBoss = BossModifier(
+      id: 'x',
+      name: 'Kısa',
+      description: '',
+      rule: BossRule.maxLength,
+      value: 4,
+    );
+    expect(minBoss.validate('çay'), isNotNull);
+    expect(minBoss.validate('kalem'), isNull);
+    expect(maxBoss.validate('kalem'), isNotNull);
+    expect(maxBoss.validate('elma'), isNull);
+  });
+
+  test('anagram soft hint uzun kelime tercih eder', () {
+    final d = WordDictionary(['elma', 'mal', 'kitap', 'kalem', 'su']);
+    final word = d.findPlayableWord(['k', 'a', 'l', 'e', 'm', 't', 'i', 's']);
     expect(word, isNotNull);
-    expect(word!.length, kWordLength);
+    expect(isValidWordLength(word!.length), isTrue);
     expect(['kitap', 'kalem'].contains(word), isTrue);
+  });
+
+  test('handSize ve kelime aralığı sabitleri', () {
+    expect(kHandSize, 8);
+    expect(kMinWordLength, 2);
+    expect(kMaxWordLength, 8);
+  });
+
+  test('uzun kelime jokerı yalnızca 6+ harfte', () {
+    final short = scoreWord(
+      word: 'kalem',
+      jokers: const [
+        JokerCard(
+          id: 'b',
+          name: 'Uzun',
+          description: '',
+          kind: JokerKind.longWordMult,
+          value: 1.5,
+        ),
+      ],
+    );
+    final long = scoreWord(
+      word: 'okullar',
+      jokers: const [
+        JokerCard(
+          id: 'b',
+          name: 'Uzun',
+          description: '',
+          kind: JokerKind.longWordMult,
+          value: 1.5,
+        ),
+      ],
+    );
+    final plainLong = scoreWord(word: 'okullar', jokers: const []);
+    expect(short.notes.any((n) => n.contains('Uzun')), isFalse);
+    expect(long.total, greaterThan(plainLong.total));
+  });
+
+  test('kısa kelime jokerı yalnızca tam 2 harfte', () {
+    final two = scoreWord(
+      word: 'su',
+      jokers: const [
+        JokerCard(
+          id: 'k',
+          name: 'Kısa',
+          description: '',
+          kind: JokerKind.shortWordMult,
+          value: 1.25,
+        ),
+      ],
+    );
+    final three = scoreWord(
+      word: 'çay',
+      jokers: const [
+        JokerCard(
+          id: 'k',
+          name: 'Kısa',
+          description: '',
+          kind: JokerKind.shortWordMult,
+          value: 1.25,
+        ),
+      ],
+    );
+    final plainTwo = scoreWord(word: 'su', jokers: const []);
+    expect(two.total, greaterThan(plainTwo.total));
+    expect(three.notes.any((n) => n.contains('Kısa')), isFalse);
+  });
+
+  test('ekonomi sabitleri', () {
+    expect(kMaxJokerSlots, 5);
+    expect(kShopRerollCost, 1);
+    expect(kMaxShortWordsPerLevel, 2);
   });
 
   test('debate crew onay üretir', () async {
     final crew = buildDebateCrew();
     final result = await crew.kickoff();
     final decisions = result.context.get<List<dynamic>>('decisions') ?? [];
-    expect(decisions.length, lessThanOrEqualTo(4));
+    expect(decisions.length, lessThanOrEqualTo(5));
     final ids = decisions.map((d) => d['id']).toSet();
     expect(ids.contains('first_run_tips'), isFalse);
     expect(ids.contains('new_jokers_v2'), isFalse);
@@ -104,22 +208,5 @@ void main() {
       ],
     );
     expect(mid.total, greaterThan(plain.total));
-  });
-
-  test('besli carpan her 5 harfte uygulanir', () {
-    final plain = scoreWord(word: 'kalem', jokers: const []);
-    final boosted = scoreWord(
-      word: 'kalem',
-      jokers: const [
-        JokerCard(
-          id: 'b',
-          name: 'Beşli',
-          description: '',
-          kind: JokerKind.longWordMult,
-          value: 1.4,
-        ),
-      ],
-    );
-    expect(boosted.total, greaterThan(plain.total));
   });
 }

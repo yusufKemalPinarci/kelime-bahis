@@ -4,99 +4,106 @@
     "name": "Çift Sesli",
     "description": "Kelimede her sesli harf +2 puan.",
     "kind": "vowelBonus",
-    "value": 2
+    "value": 2,
+    "cost": 3
   },
   {
     "id": "sessiz_ordu",
     "name": "Sessiz Ordu",
     "description": "Her sessiz harf +2 puan.",
     "kind": "consonantBonus",
-    "value": 2
+    "value": 2,
+    "cost": 3
   },
   {
-    "id": "besli_carpan",
-    "name": "Beşli Çarpan",
-    "description": "Her 5 harfli kelimede x1.4 çarpan.",
+    "id": "uzun_dalga",
+    "name": "Uzun Dalga",
+    "description": "6+ harfli kelimede x1.5 çarpan.",
     "kind": "longWordMult",
-    "value": 1.4
+    "value": 1.5,
+    "cost": 6
   },
   {
-    "id": "cift_vurus",
-    "name": "Çift Vuruş",
-    "description": "Aynı harften 2+ varsa x1.35 çarpan.",
+    "id": "kisa_ates",
+    "name": "Kısa Ateş",
+    "description": "Tam 2 harfli kelimede x1.25 çarpan.",
     "kind": "shortWordMult",
-    "value": 1.35
+    "value": 1.25,
+    "cost": 3
   },
   {
     "id": "tekrar_avcisi",
     "name": "Tekrar Avcısı",
     "description": "Aynı harften 2+ varsa +8 puan.",
     "kind": "duplicateBonus",
-    "value": 8
+    "value": 8,
+    "cost": 4
   },
   {
     "id": "son_harf",
     "name": "Son Harf",
     "description": "Kelimenin son harfi x2 puan alır.",
     "kind": "lastLetterDouble",
-    "value": 2
+    "value": 2,
+    "cost": 4
   },
   {
     "id": "ilk_harf",
     "name": "İlk Harf",
     "description": "Kelimenin ilk harfi x2 puan alır.",
     "kind": "firstLetterDouble",
-    "value": 2
+    "value": 2,
+    "cost": 4
   },
   {
-    "id": "orta_ates",
-    "name": "Orta Ateş",
-    "description": "Orta harf varken +12 puan.",
+    "id": "alti_bonus",
+    "name": "Altılı Bonus",
+    "description": "Tam 6 harfli kelimede +14 puan.",
     "kind": "exactLengthBonus",
-    "value": 12,
-    "meta": 5
-  },
-  {
-    "id": "besli_bonus",
-    "name": "Beşli Bonus",
-    "description": "Her kelimeye +10 düz bonus.",
-    "kind": "flatBonus",
-    "value": 10
+    "value": 14,
+    "meta": 6,
+    "cost": 5
   },
   {
     "id": "noktalama",
     "name": "Nokta Atışı",
     "description": "Her kelime skoruna +5 düz bonus.",
     "kind": "flatBonus",
-    "value": 5
+    "value": 5,
+    "cost": 4
   },
   {
     "id": "nadir_avci",
     "name": "Nadir Avcı",
     "description": "J Ğ F Ö V Ü Ş Ç harfleri +6'şar.",
     "kind": "rareLetterBonus",
-    "value": 6
-  },
-  {
-    "id": "cift_bonus",
-    "name": "Çift Bonus",
-    "description": "Her kelimeye +8 düz bonus.",
-    "kind": "flatBonus",
-    "value": 8
+    "value": 6,
+    "cost": 5
   },
   {
     "id": "orta_harf",
     "name": "Orta Harf",
     "description": "Kelimenin orta harfi x2 puan alır.",
     "kind": "middleLetterDouble",
-    "value": 2
+    "value": 2,
+    "cost": 4
   },
   {
     "id": "sessiz_yigin",
     "name": "Sessiz Yığın",
-    "description": "En az 3 sessiz harf varsa +14 puan.",
+    "description": "En az 4 sessiz harf varsa +16 puan.",
     "kind": "consonantStack",
-    "value": 14,
-    "meta": 3
+    "value": 16,
+    "meta": 4,
+    "cost": 5
+  },
+  {
+    "id": "sekizli",
+    "name": "Sekizli",
+    "description": "Tam 8 harfli kelimede +20 puan.",
+    "kind": "exactLengthBonus",
+    "value": 20,
+    "meta": 8,
+    "cost": 6
   }
 ]

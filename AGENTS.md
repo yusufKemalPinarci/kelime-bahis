@@ -12,7 +12,7 @@ Cursor kuralları: [PatrickJS/awesome-cursorrules](https://github.com/PatrickJS/
 | Agent | Rol | Görev (ne yapar) | Dokunmaz |
 |-------|-----|------------------|----------|
 | **DesignerAgent** | Oyun Tasarımcısı | El boyutu, tur/atım, seviye ritmi, mağaza seçim sayısı, UX akışı (tek hedef / tek CTA) | Harf puanı tablosu, sözlük filtresi, joker JSON gövdesi |
-| **DictionaryAgent** | Sözlük Uzmanı | `tr_words.txt` filtre/doğrulama; **tam 5 harf**; yalnızca Türkçe harf; offline `WordDictionary` | Skor formülü, boss kısıtları, UI teması |
+| **DictionaryAgent** | Sözlük Uzmanı | `tr_words.txt` filtre/doğrulama; **2–8 harf**; yalnızca Türkçe harf; offline `WordDictionary` | Skor formülü, boss kısıtları, UI teması |
 | **BalanceAgent** | Denge Mühendisi | Harf puanları, seviye hedefleri, joker çarpan üst sınırları, torba dengesi | Sözlük kelime listesi, boss metinleri, ekran layout |
 | **ContentAgent** | İçerik Üreticisi | `jokers.json` / `bosses.json`, Türkçe isimler, kısıt açıklamaları, görsel/metin cilası | Motor matematiği, sözlük API’si (yok), ekonomi formülü |
 | **Facilitator** | Kolaylaştırıcı | Tartışma turunda önerileri skorlar; onaylı backlog (`approved`) üretir | Doğrudan oyun kodu yazmaz |
@@ -64,4 +64,4 @@ dart run scripts/run_crew.dart     # aşama 1–4
 
 ## Oyun özeti
 
-Harf torbasından el çek → **tam 5 harfli** Türkçe kelime kur → joker sinerjileriyle skor üret → hedefi geç → mağazadan joker al → boss seviyelerinde kısıtlamalarla oyna. Hepsi offline.
+Harf torbasından el çek (8) → **2–8 harfli** Türkçe kelime kur → joker sinerjileriyle skor üret → hedefi geç → mağazadan joker al → boss seviyelerinde kısıtlamalarla oyna. Hepsi offline.

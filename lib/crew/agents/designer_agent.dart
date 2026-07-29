@@ -12,15 +12,19 @@ Agent createDesignerAgent() {
         'Pipeline’da dictionary’den önce çalışır. API yok; sabit kurallar.',
     execute: (CrewContext ctx) async {
       final design = <String, dynamic>{
-        'handSize': 5,
-        'wordLength': 5,
-        'startingBagSize': 60,
+        'handSize': 8,
+        'minWordLength': 2,
+        'maxWordLength': 8,
+        'startingBagSize': 112,
         'maxHandsPerLevel': 4,
         'maxDiscardsPerLevel': 2,
         'levelsBeforeBoss': 3,
-        'baseTargetScore': 40,
-        'targetScoreGrowth': 1.35,
+        'baseTargetScore': 32,
+        'targetScoreGrowth': 1.22,
         'shopJokerChoices': 3,
+        'maxJokerSlots': 5,
+        'shopRerollCost': 1,
+        'maxShortWordsPerLevel': 2,
       };
       ctx.set('design', design);
       return 'Tasarım sabitlendi: el=${design['handSize']}, '

@@ -35,12 +35,13 @@ Artı proje kuralları: `project-kelime-bahis.mdc`, `crew-orchestration.mdc`
 
 ## Oynanış
 
-1. Elinden **tam 5 harf** seç, Türkçe kelime kur  
-2. Joker’lerle skor çarpanı üret  
+1. Elinden **8 harften 2–8’ini** seç, Türkçe kelime kur  
+2. Kısa kelime güvenli / uzun kelime yüksek skor; joker sinerjisi  
 3. Hedefi geç, mağazadan joker al  
 4. Her 4. seviyede boss kısıtı  
 
-Sözlük: `assets/dictionary/tr_words.txt` (~5.5k × 5 harfli kelime, ~36 KB, offline).
+Sözlük: `assets/dictionary/tr_words.txt` (~32k × 2–8 harfli Türkçe kelime, offline).  
+Yeniden üret: `dart run scripts/build_tr_dict.dart assets/dictionary/source/turkish_words_raw.txt`
 
 ### Modlar
 

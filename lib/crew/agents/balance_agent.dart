@@ -52,10 +52,24 @@ Agent createBalanceAgent() {
         (i) => (base * _pow(growth, i)).round(),
       );
 
+      final lengthMult = <String, double>{
+        '2': 0.5,
+        '3': 0.85,
+        '4': 1.0,
+        '5': 1.0,
+        '6': 1.25,
+        '7': 1.5,
+        '8': 1.8,
+      };
+
       ctx.set('letterPoints', letterPoints);
       ctx.set('levelTargets', targets);
+      ctx.set('lengthMultipliers', lengthMult);
+      ctx.set('longWordThreshold', 6);
+      ctx.set('shortWordExactLength', 2);
+      ctx.set('maxShortWordsPerLevel', 2);
       return 'Denge hazır: ${letterPoints.length} harf puanı, '
-          'hedefler=$targets';
+          'hedefler=$targets, uzunluk=$lengthMult';
     },
   );
 }

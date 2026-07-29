@@ -7,11 +7,11 @@ Agent createDictionaryAgent() {
   return Agent(
     role: 'Sözlük Uzmanı',
     goal:
-        '[aşama dictionary] tr_words.txt’yi filtrele: tam 5 harf, yalnızca '
+        '[aşama dictionary] tr_words.txt’yi filtrele: 2–8 harf, yalnızca '
         'Türkçe harf; offline WordDictionary ile uyumlu tut',
     backstory:
         'design sonrası, balance öncesi çalışır. Offline sözlük bakımı; '
-        'harici API yok. Oyun yalnızca 5 harfli kelime kabul eder.',
+        'harici API yok. Oyun 2–8 harfli Türkçe kelime kabul eder.',
     execute: (CrewContext ctx) async {
       final path = ctx.get<String>('dictionaryPath') ??
           'assets/dictionary/tr_words.txt';
@@ -22,10 +22,14 @@ Agent createDictionaryAgent() {
         return 'Sözlük bulunamadı: $path';
       }
 
+      final design = ctx.get<Map<String, dynamic>>('design') ?? {};
+      final minLen = (design['minWordLength'] as num?)?.toInt() ?? 2;
+      final maxLen = (design['maxWordLength'] as num?)?.toInt() ?? 8;
+
       final raw = await file.readAsLines();
       final words = raw
           .map((w) => w.trim().toLocaleLowerCaseTr())
-          .where((w) => w.length == 5)
+          .where((w) => w.length >= minLen && w.length <= maxLen)
           .where(_isTurkishWord)
           .toSet()
           .toList()
@@ -33,8 +37,9 @@ Agent createDictionaryAgent() {
 
       ctx.set('wordCount', words.length);
       ctx.set('wordsSample', words.take(12).toList());
-      ctx.set('wordLength', 5);
-      return 'Sözlük hazır: ${words.length} kelime (tam 5 harf, TR harfler)';
+      ctx.set('minWordLength', minLen);
+      ctx.set('maxWordLength', maxLen);
+      return 'Sözlük hazır: ${words.length} kelime ($minLen–$maxLen harf, TR)';
     },
   );
 }

@@ -6,7 +6,7 @@ alwaysApply: true
 # Kelime Bahis
 
 - Tek oyunculu, **full offline** kelime-roguelike (Wordlike + Balatro ilhamı).
-- Oyun modu: **yalnızca 5 harfli** Türkçe kelimeler (`assets/dictionary/tr_words.txt`).
+- Oyun modu: **2–8 harfli** Türkçe kelimeler; el boyutu **8** (`assets/dictionary/tr_words.txt`).
 - İnternet, hesap, sync, reklam, API key **yok**.
 - Dil: Türkçe UI + Türkçe sözlük + Türkçe harf torbası.
 - Stack: Flutter, Material 3, yerel state (ViewModel / ChangeNotifier).

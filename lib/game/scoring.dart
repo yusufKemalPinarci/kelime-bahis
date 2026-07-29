@@ -25,6 +25,7 @@ class JokerCard {
     required this.kind,
     required this.value,
     this.meta,
+    this.cost = 4,
   });
 
   final String id;
@@ -33,6 +34,7 @@ class JokerCard {
   final JokerKind kind;
   final double value;
   final int? meta;
+  final int cost;
 
   factory JokerCard.fromJson(Map<String, dynamic> json) {
     return JokerCard(
@@ -45,6 +47,7 @@ class JokerCard {
       ),
       value: (json['value'] as num).toDouble(),
       meta: (json['meta'] as num?)?.toInt(),
+      cost: (json['cost'] as num?)?.toInt() ?? 4,
     );
   }
 }
@@ -174,6 +177,12 @@ ScoreBreakdown scoreWord({
   var mult = 1.0;
   final notes = <String>[];
 
+  final lenMult = lengthMultiplier(letters.length);
+  if (lenMult != 1.0) {
+    mult *= lenMult;
+    notes.add('Uzunluk×${letters.length}: x$lenMult');
+  }
+
   for (final j in jokers) {
     switch (j.kind) {
       case JokerKind.vowelBonus:
@@ -187,18 +196,12 @@ ScoreBreakdown scoreWord({
         bonus += add;
         if (add > 0) notes.add('${j.name}: +$add');
       case JokerKind.longWordMult:
-        // 5 harf modunda her geçerli kelime bu çarpanı alır.
-        if (letters.length == kWordLength) {
+        if (letters.length >= kLongWordThreshold) {
           mult *= j.value;
           notes.add('${j.name}: x${j.value}');
         }
       case JokerKind.shortWordMult:
-        // Çift harf varsa çarpan (eski kısa-kelime slotu yeniden kullanıldı).
-        final freq = <String, int>{};
-        for (final l in letters) {
-          freq[l] = (freq[l] ?? 0) + 1;
-        }
-        if (freq.values.any((c) => c >= 2)) {
+        if (letters.length == kShortWordExactLength) {
           mult *= j.value;
           notes.add('${j.name}: x${j.value}');
         }
