@@ -1,0 +1,15 @@
+---
+description: Oturum sürekliliği — PROGRESS.md oku ve güncelle
+alwaysApply: true
+---
+
+# İlerleme dosyası
+
+- Yeni sohbet / özellik işine başlamadan önce **`PROGRESS.md`** oku.
+- Anlamlı bir iş bitince (özellik, denge, içerik, bugfix) **`PROGRESS.md`** güncelle:
+  - Tamamlananlar checkbox
+  - Sıradaki backlog
+  - Branch / commit notu (varsa)
+  - Oturum günlüğüne 1 satır
+- Sistematik sıra: `AGENTS.md` + crew pipeline; API yok, offline kal.
+- Kullanıcı “özet / yeni chat” isterse `PROGRESS.md` + yapıştırılabilir prompt ver.
