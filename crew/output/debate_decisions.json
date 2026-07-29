@@ -1,134 +1,50 @@
 {
   "results": [
     {
-      "task": "designer_pitch",
-      "agent": "Tasarimci",
-      "output": "Tasarimci: sadelik 3 oneri",
-      "stage": "debate"
-    },
-    {
-      "task": "dictionary_pitch",
-      "agent": "Sozluk",
-      "output": "Sozluk: 3 oneri",
-      "stage": "debate"
-    },
-    {
-      "task": "balance_pitch",
-      "agent": "Denge",
-      "output": "Denge: 3 oneri",
-      "stage": "debate"
-    },
-    {
-      "task": "content_pitch",
-      "agent": "Icerik/Gorsel",
-      "output": "Icerik: 3 oneri",
-      "stage": "debate"
-    },
-    {
       "task": "facilitate",
       "agent": "Facilitator",
-      "output": "Tur5: ",
+      "output": "Tur7: smooth_targets, dict_quality, discard_return, light_economy",
       "stage": "debate"
     }
   ],
   "context": {
     "current_task": "facilitate",
-    "task_description": "[aşama 0:debate] Oyla ve backlog onayla",
+    "task_description": "[aşama 0:debate] Eglence bosluklari turu",
     "current_stage": "debate",
-    "debate_designer": [
+    "decisions": [
       {
-        "id": "inline_how_to_play",
-        "title": "Oyun ekraninda hep gorunen 1 satir kural",
-        "why": "Dialog unutulur; HUD ogretir",
-        "effort": 1,
-        "impact": 5
+        "id": "smooth_targets",
+        "title": "Tek surekli hedef egrisi + kisa kelime limiti",
+        "score": 12,
+        "mentions": 2,
+        "status": "approved",
+        "round": 7
       },
       {
-        "id": "simplify_controls",
-        "title": "Temizle/Sirala ikincil; OYNA buyuk",
-        "why": "Ana eylem net",
-        "effort": 2,
-        "impact": 5
+        "id": "dict_quality",
+        "title": "2-harf allowlist + blocklist",
+        "score": 11,
+        "mentions": 2,
+        "status": "approved",
+        "round": 7
       },
       {
-        "id": "skip_starter_default",
-        "title": "Starter joker opsiyonel; varsayilan direkt oyna",
-        "why": "Ilk engeli kaldir",
-        "effort": 2,
-        "impact": 4
+        "id": "discard_return",
+        "title": "Discard torbaya donsun",
+        "score": 10,
+        "mentions": 1,
+        "status": "approved",
+        "round": 7
+      },
+      {
+        "id": "light_economy",
+        "title": "Altin, joker fiyat, 5 slot, reroll maliyeti",
+        "score": 10,
+        "mentions": 1,
+        "status": "approved",
+        "round": 7
       }
     ],
-    "last_output": "Tur5: ",
-    "debate_dictionary": [
-      {
-        "id": "common_tr_dict",
-        "title": "Yaygin Turkce sozluk yenile (3-7 harf)",
-        "why": "Oyuncu kelime bulabilsin",
-        "effort": 3,
-        "impact": 5
-      },
-      {
-        "id": "inline_how_to_play",
-        "title": "Kural: Turkce kelime kur, hedefi gec",
-        "why": "Sozluk beklentisini netlestir",
-        "effort": 1,
-        "impact": 4
-      },
-      {
-        "id": "show_word_preview_score",
-        "title": "Secili kelimenin anlik skorunu goster",
-        "why": "OYNA oncesi ne olacagini anlar",
-        "effort": 2,
-        "impact": 4
-      }
-    ],
-    "debate_balance": [
-      {
-        "id": "easier_early_targets",
-        "title": "Ilk 3 seviye daha dusuk hedef",
-        "why": "Ogrenirken kaybetme",
-        "effort": 1,
-        "impact": 5
-      },
-      {
-        "id": "skip_starter_default",
-        "title": "Joker secimini atla; magazada ogren",
-        "why": "Karar yuku sonraya",
-        "effort": 1,
-        "impact": 3
-      },
-      {
-        "id": "show_word_preview_score",
-        "title": "Anlik skor onizleme",
-        "why": "Hedefe ne kadar kaldigini gorur",
-        "effort": 1,
-        "impact": 4
-      }
-    ],
-    "debate_content": [
-      {
-        "id": "visual_refresh",
-        "title": "Harf tasi + hedef cubugu + sade ana ekran",
-        "why": "Ilk bakista oyun dili",
-        "effort": 3,
-        "impact": 5
-      },
-      {
-        "id": "common_tr_dict",
-        "title": "Sozluk kalitesi",
-        "why": "Icerik = kelimeler",
-        "effort": 2,
-        "impact": 5
-      },
-      {
-        "id": "simplify_controls",
-        "title": "Az buton",
-        "why": "Gorsel nefes",
-        "effort": 1,
-        "impact": 4
-      }
-    ],
-    "decisions": [],
     "deferred": []
   }
 }

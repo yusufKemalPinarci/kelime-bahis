@@ -47,5 +47,19 @@
     "description": "Kelimede en fazla 1 sesli harf.",
     "rule": "maxVowels",
     "value": 1
+  },
+  {
+    "id": "uzun_yol",
+    "name": "Uzun Yol",
+    "description": "En az 5 harfli kelime zorunlu.",
+    "rule": "minLength",
+    "value": 5
+  },
+  {
+    "id": "kisa_devriye",
+    "name": "Kısa Devriye",
+    "description": "En fazla 4 harfli kelime.",
+    "rule": "maxLength",
+    "value": 4
   }
 ]

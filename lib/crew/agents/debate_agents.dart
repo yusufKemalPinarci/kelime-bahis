@@ -28,6 +28,15 @@ const kShippedFeatureIds = {
   'skip_starter_default',
   'visual_refresh',
   'easier_early_targets',
+  // Tur 6 — değişken uzunluk
+  'variable_word_length_hand8',
+  'wide_tr_dict',
+  'length_scoring_fun',
+  // Tur 7 — eğlence boşlukları
+  'smooth_targets',
+  'dict_quality',
+  'discard_return',
+  'light_economy',
 };
 
 Agent createDebateDesignerAgent() {

@@ -75,7 +75,7 @@ const kAppPipeline = <StageSpec>[
     order: 2,
     agentRole: 'Sözlük Uzmanı',
     taskName: 'prepare_dictionary',
-    goal: 'tr_words filtrele; tam 5 harf; yalnızca TR harfler; offline doğrulama',
+    goal: 'tr_words filtrele; 2–8 harf; yalnızca TR harfler; offline doğrulama',
     ownsPaths: [
       'assets/dictionary/',
       'lib/game/word_dictionary.dart',
