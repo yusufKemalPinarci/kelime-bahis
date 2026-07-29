@@ -3,8 +3,8 @@
 > Her özellik/oturum bitince bu dosya güncellenir. Yeni chat önce burayı okur.
 
 **Son güncelleme:** 2026-07-29  
-**Branch:** `cursor/five-letter-mode-crew-pipeline` (remote’a push edildi)  
-**Son commit:** `158c5c0` — Lock play to 5-letter Turkish words and document the crew stage pipeline.
+**Branch:** `master` (remote ile senkron)  
+**Son commit:** `69171bb` — Add PROGRESS.md handoff so new chats continue systematically.
 
 ---
 
