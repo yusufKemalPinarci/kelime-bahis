@@ -1,8 +1,10 @@
 # Kelime Bahis
 
-Full offline Türkçe kelime-roguelike (Wordlike / Balatro tarzı).
+Türkçe kelime-roguelike (Wordlike / Balatro tarzı).
 
-İnternet, hesap, reklam ve API key **yok**.
+Oynanış tamamen offline. Reklam (AdMob banner/ödüllü) ve tek seferlik
+"reklamları kaldır" satın alımı (Google Play Billing) için internet
+gerekir; hesap oluşturma yok, üçüncü taraf API key kullanılmıyor.
 
 ## Çalıştır
 
@@ -35,13 +37,16 @@ Artı proje kuralları: `project-kelime-bahis.mdc`, `crew-orchestration.mdc`
 
 ## Oynanış
 
-1. Elinden **8 harften 2–8’ini** seç, Türkçe kelime kur  
-2. Kısa kelime güvenli / uzun kelime yüksek skor; joker sinerjisi  
-3. Hedefi geç, mağazadan joker al  
-4. Her 4. seviyede boss kısıtı  
+1. Her seviye bir kelime uzunluğu demek: Seviye 1 → 2 harf, ... Seviye 7 → 8
+   harf (`lengthForLevel`), elindeki 8 harften tam o uzunlukta Türkçe kelime kur
+2. Kısa kelime güvenli / uzun kelime yüksek skor; joker sinerjisi
+3. Hedefi geç, mağazadan joker al (koşu başlamadan önce de bir kez mağaza açılır)
+4. Her 4. seviyede + 7. (final) seviyede boss kısıtı
+5. Bilemediğinde **Pas** (elin tamamını bedavaya yeniler) veya **İflas**
+   (koşuyu 1. seviyeden sıfırlar) hakların var
 
 Sözlük: `assets/dictionary/tr_words.txt` (~32k × 2–8 harfli Türkçe kelime, offline).  
-Yeniden üret: `dart run scripts/build_tr_dict.dart assets/dictionary/source/turkish_words_raw.txt`
+Yeniden üret: `dart run scripts/build_tr_dict.dart`
 
 ### Modlar
 

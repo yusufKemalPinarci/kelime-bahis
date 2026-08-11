@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'turkish.dart';
 import 'word_length.dart';
 
@@ -39,7 +41,7 @@ class WordDictionary {
     return chars.join();
   }
 
-  /// Elden 2–8 harfli oynanabilir kelime bulur; uzun/çeşitli tercih edilir.
+  /// Elden 3–8 harfli oynanabilir kelime bulur; uzun/çeşitli tercih edilir.
   String? findPlayableWord(
     Iterable<String> handLetters, {
     bool Function(String word)? validate,
@@ -83,6 +85,59 @@ class WordDictionary {
       if (best != null && best.length == len) break;
     }
     return best;
+  }
+
+  /// [findPlayableWord]'ün hedef uzunluğu önceden bilinen sürümü — çok
+  /// uzunluklu azalan taramayı atlayıp doğrudan `_byLength[length]`'i
+  /// tarar. `_ensureSolvable`/`useSoftHint` gibi çağıranlar zaten
+  /// `w.length == length` şartını `validate`'e koyduğu için davranış
+  /// aynıdır, yalnızca gereksiz uzun-uzunluk taramaları elenir (bkz.
+  /// GameController._ensureSolvable dokümantasyonu).
+  String? findPlayableWordOfLength(
+    int length,
+    Iterable<String> handLetters, {
+    bool Function(String word)? validate,
+  }) {
+    final counts = <String, int>{};
+    for (final raw in handLetters) {
+      final l = normalizeTr(raw);
+      counts[l] = (counts[l] ?? 0) + 1;
+    }
+
+    String? best;
+    var bestScore = -1;
+    for (final w in _byLength[length] ?? const <String>[]) {
+      if (!_canSpell(w, counts)) continue;
+      if (validate != null && !validate(w)) continue;
+      final score = w.split('').toSet().length;
+      if (best == null || score > bestScore) {
+        best = w;
+        bestScore = score;
+      }
+    }
+    return best;
+  }
+
+  /// Verilen uzunlukta, [validate] koşulunu sağlayan bir kelime var mı?
+  bool hasWordOfLength(int length, {bool Function(String word)? validate}) {
+    final candidates = _byLength[length] ?? const <String>[];
+    if (validate == null) return candidates.isNotEmpty;
+    return candidates.any(validate);
+  }
+
+  /// Verilen uzunlukta, [validate] koşulunu sağlayan kelimeler arasından
+  /// [rng] ile rastgele biri seçilir. Torba/el bu kelimenin harfleriyle
+  /// "ekilerek" kelime kurulabilirliği garanti edilir (bkz. GameController).
+  String? pickRandomWordOfLength(
+    int length, {
+    bool Function(String word)? validate,
+    required Random rng,
+  }) {
+    final pool = validate == null
+        ? (_byLength[length] ?? const <String>[])
+        : (_byLength[length] ?? const <String>[]).where(validate).toList();
+    if (pool.isEmpty) return null;
+    return pool.elementAt(rng.nextInt(pool.length));
   }
 
   bool _canSpell(String word, Map<String, int> hand) {

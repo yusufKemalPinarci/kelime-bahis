@@ -5,9 +5,10 @@ alwaysApply: true
 
 # Kelime Bahis
 
-- Tek oyunculu, **full offline** kelime-roguelike (Wordlike + Balatro ilhamı).
+- Tek oyunculu kelime oyunu (Wordlike + Balatro ilhamı: joker/mağaza/boss); oyun mantığı ve sözlük **tamamen offline**.
 - Oyun modu: **2–8 harfli** Türkçe kelimeler; el boyutu **8** (`assets/dictionary/tr_words.txt`).
-- İnternet, hesap, sync, reklam, API key **yok**.
+- **Permadeath yok** (2026-08-06 itibarıyla): Klasik/günlükte bir seviyeyi kaybetmek koşuyu bitirmez — seviye altın/joker/seviye numarası korunarak yerinde yeniden başlar (`GameController.playWord`'daki `handsLeft<=0` dalı). Koşu ilerlemesi (`LocalStats.savedRun*`) diske yazılır; ana ekranda "Devam et" ile kaldığı seviyeden sürdürülür (`GameController.resumeRun`). Yalnızca **Endless** modu skor-avı olarak permadeath'i korur.
+- Hesap, sync, API key **yok**. Gelir modeli (2026-08-06 itibarıyla): AdMob (ödüllü + banner reklam) + tek seferlik "reklamları kaldır" IAP — bunlar internet gerektirir, oyunun kendisi hâlâ gerektirmez. Detay: `lib/services/ads_controller.dart`, `lib/services/purchase_controller.dart`.
 - Dil: Türkçe UI + Türkçe sözlük + Türkçe harf torbası.
 - Stack: Flutter, Material 3, yerel state (ViewModel / ChangeNotifier).
 - Kaynak: `awesome-cursorrules` Flutter kurallarına uy; MVVM altına yakın yapı kullan.
@@ -24,4 +25,4 @@ alwaysApply: true
 
 - CrewAI paketi / OpenAI / Gemini / herhangi bir LLM API key
 - Online kelime doğrulama
-- Pay-to-win veya zorunlu reklam
+- Pay-to-win veya **zorunlu** reklam (interstitial dahil) — reklamlar yalnızca opt-in (ödüllü) veya pasif (banner, "reklamları kaldır" ile kapatılabilir) olmalı
