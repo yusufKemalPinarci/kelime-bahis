@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'daily_seed.dart';
 import 'letter_bag.dart';
 import 'local_stats.dart';
+import 'rank.dart';
 import 'scoring.dart';
 import 'turkish.dart';
 import 'word_dictionary.dart';
@@ -16,15 +17,11 @@ enum RunPhase { starter, playing, shop, won, lost }
 
 enum RunMode { classic, daily }
 
-const _trOrder = 'abcçdefgğhıijklmnoöprsştuüvyz';
+// --- Tur 8 design hooks (DesignerAgent) ---
+/// Başlangıç altını. Eski: 4. Playtest: 5 → ilk mağazada ucuz joker + reroll hissi.
+const int kStartingGold = 5;
 
-int _trLetterCompare(String a, String b) {
-  final na = normalizeTr(a);
-  final nb = normalizeTr(b);
-  final ia = _trOrder.indexOf(na);
-  final ib = _trOrder.indexOf(nb);
-  return (ia < 0 ? 99 : ia).compareTo(ib < 0 ? 99 : ib);
-}
+// Boss hedef çarpanı: scoring.dart `kBossTargetMultiplier` / `computeLevelTarget`.
 
 class GameController extends ChangeNotifier {
   WordDictionary? dictionary;
@@ -45,16 +42,21 @@ class GameController extends ChangeNotifier {
   int handsLeft = 4;
   int discardsLeft = 2;
   int hintsLeft = 1;
-  int shopRerollsLeft = 1;
+  int passesLeft = 1;
   int gold = 0;
-  int shortWordsThisLevel = 0;
+  int requiredLength = 2;
+  int comboStreak = 0;
   bool endless = false;
   BossModifier? activeBoss;
   RunPhase phase = RunPhase.starter;
   RunMode mode = RunMode.classic;
+  bool _pregameShop = false;
+
+  /// Koşu başlamadan önceki tek seferlik "hazırlık" mağazası mı?
+  bool get isPregameShop => _pregameShop;
   DailySeed? dailySeed;
   int? runSeed;
-  String message = '2–8 harfli Türkçe kelime kur, hedefi geç.';
+  String message = '';
   String? hintWord;
   int? hintEstimatedScore;
   ScoreBreakdown? lastScore;
@@ -64,9 +66,24 @@ class GameController extends ChangeNotifier {
   String? bestWordPlayed;
   bool ready = false;
 
+  /// Bootstrap sırasında ölümcül hata (sözlük yüklenemedi vb.); UI hata ekranı
+  /// gösterir ve tekrar denemeye izin verir.
+  String? bootstrapError;
+
+  /// Koşu başındaki ömür boyu puan — bitişte kazanılan puanı hesaplamak için.
+  int _lifetimeScoreAtRunStart = 0;
+
+  int get lifetimeScoreGainedThisRun =>
+      stats.lifetimeScore - _lifetimeScoreAtRunStart;
+
+  bool get rankedUpThisRun =>
+      rankForScore(stats.lifetimeScore).threshold >
+      rankForScore(_lifetimeScoreAtRunStart).threshold;
+
   static const handSize = kHandSize;
 
-  bool get isBossLevel => !endless && level % 4 == 0;
+  bool get isBossLevel =>
+      !endless && (isBossLevelNumber(level) || level == kClassicLevels);
 
   bool get dailyAvailableToday {
     final today = DailySeed.today();
@@ -80,41 +97,142 @@ class GameController extends ChangeNotifier {
   BossModifier? get upcomingBossPreview {
     if (phase != RunPhase.shop || endless || bosses.isEmpty) return null;
     final next = level + 1;
-    if (next % 4 != 0) return null;
+    if (!isBossLevelNumber(next)) return null;
     final idx = _seededIndex(bosses.length, salt: next * 17 + (runSeed ?? 0));
     return bosses[idx];
   }
 
+  /// `boss_score_pressure` HUD metin kuralı — tek satır, ikincil; ana CTA değil.
+  /// Örnek: «Boss · hedef +10%». UI agent chip olarak okur.
+  String? get bossPressureHudText {
+    if (!isBossLevel || activeBoss == null) return null;
+    final pct = ((kBossTargetMultiplier - 1.0) * 100).round();
+    return 'Boss · hedef +$pct%';
+  }
+
   Future<void> bootstrap() async {
+    bootstrapError = null;
     stats = await LocalStats.load();
+    _pruneStaleSavedRun();
 
-    final wordsRaw =
-        await rootBundle.loadString('assets/dictionary/tr_words.txt');
-    final words = wordsRaw
-        .split(RegExp(r'\r?\n'))
-        .map((w) => w.trim())
-        .where((w) => w.isNotEmpty)
-        .where((w) {
-          final n = normalizeTr(w);
-          return isValidWordLength(n.length);
-        });
-    dictionary = WordDictionary(words);
-    dictionary!.buildAnagramIndex();
+    try {
+      final wordsRaw =
+          await rootBundle.loadString('assets/dictionary/tr_words.txt');
+      final words = wordsRaw
+          .split(RegExp(r'\r?\n'))
+          .map((w) => w.trim())
+          .where((w) => w.isNotEmpty)
+          .where((w) {
+            final n = normalizeTr(w);
+            return isValidWordLength(n.length);
+          });
+      dictionary = WordDictionary(words);
+      dictionary!.buildAnagramIndex();
+    } catch (e) {
+      // Sözlük olmadan oyun oynanamaz — hata ekranı gösterilir.
+      bootstrapError = 'Sözlük yüklenemedi: $e';
+      notifyListeners();
+      return;
+    }
 
-    final jokersRaw = await rootBundle.loadString('assets/content/jokers.json');
-    catalog = (jsonDecode(jokersRaw) as List)
-        .cast<Map<String, dynamic>>()
-        .map(JokerCard.fromJson)
-        .toList();
-
-    final bossesRaw = await rootBundle.loadString('assets/content/bosses.json');
-    bosses = (jsonDecode(bossesRaw) as List)
-        .cast<Map<String, dynamic>>()
-        .map(BossModifier.fromJson)
-        .toList();
+    catalog = await _loadContentList(
+      'assets/content/jokers.json',
+      JokerCard.fromJson,
+    );
+    bosses = await _loadContentList(
+      'assets/content/bosses.json',
+      BossModifier.fromJson,
+    );
 
     ready = true;
     startNewRun();
+  }
+
+  /// İçerik JSON'unu güvenli yükler: dosya/parse hatasında boş liste,
+  /// bozuk tek girdilerde o girdiyi atla — oyun çalışmaya devam etsin.
+  Future<List<T>> _loadContentList<T>(
+    String asset,
+    T Function(Map<String, dynamic>) fromJson,
+  ) async {
+    try {
+      final raw = await rootBundle.loadString(asset);
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return [];
+      final items = <T>[];
+      for (final entry in decoded) {
+        if (entry is! Map<String, dynamic>) continue;
+        try {
+          items.add(fromJson(entry));
+        } catch (e) {
+          debugPrint('$asset içinde bozuk girdi atlandı: $e');
+        }
+      }
+      return items;
+    } catch (e) {
+      debugPrint('$asset yüklenemedi: $e');
+      return [];
+    }
+  }
+
+  /// Günlük kaydedilmiş koşu bugüne ait değilse (gün değişmiş) sil.
+  void _pruneStaleSavedRun() {
+    if (stats.savedRunMode == 'daily' &&
+        stats.savedRunDailyKey != DailySeed.today().storageKey) {
+      stats.clearSavedRun();
+    }
+  }
+
+  /// Seviye ilerledikçe koşuyu diske yazar — uygulama kapansa/çıkılsa bile
+  /// `resumeRun()` ile kaldığı yerden devam edilebilir. Endless kalıcı
+  /// değildir (skor-avı modu, bilerek kaydedilmez).
+  void _persistRunState() {
+    if (endless) return;
+    stats.saveRun(
+      mode: mode == RunMode.daily ? 'daily' : 'classic',
+      level: level,
+      gold: gold,
+      jokerIds: ownedJokers.map((j) => j.id).toList(),
+      dailyKey: mode == RunMode.daily ? dailySeed?.storageKey : null,
+    );
+    stats.save();
+  }
+
+  /// Kaydedilmiş koşuyu geri yükler (bkz. `LocalStats.hasSavedRun`).
+  void resumeRun() {
+    if (!stats.hasSavedRun) return;
+    mode = stats.savedRunMode == 'daily' ? RunMode.daily : RunMode.classic;
+    endless = false;
+    if (mode == RunMode.daily) {
+      dailySeed = DailySeed.today();
+      runSeed = dailySeed!.value;
+    } else {
+      dailySeed = null;
+      runSeed = DateTime.now().millisecondsSinceEpoch & 0x7fffffff;
+    }
+
+    bag = LetterBag.standard(seed: runSeed);
+    hand.clear();
+    selected.clear();
+    ownedJokers
+      ..clear()
+      ..addAll(catalog.where((j) => stats.savedRunJokerIds.contains(j.id)));
+    shopOffers.clear();
+    playedThisLevel.clear();
+    level = stats.savedRunLevel!;
+    gold = stats.savedRunGold;
+    _lifetimeScoreAtRunStart = stats.lifetimeScore;
+    hintWord = null;
+    hintEstimatedScore = null;
+    lastScore = null;
+    lastEfficiencyBonus = 0;
+    lastGoldEarned = 0;
+    bestWordScore = 0;
+    bestWordPlayed = null;
+    _setupLevel();
+    _refillHand();
+    phase = RunPhase.playing;
+    message = 'Seviye $level · $requiredLength harfli kelime · hedef $target';
+    notifyListeners();
   }
 
   void startNewRun({RunMode runMode = RunMode.classic}) {
@@ -136,12 +254,11 @@ class GameController extends ChangeNotifier {
     playedThisLevel.clear();
     level = 1;
     score = 0;
-    gold = 4;
-    shortWordsThisLevel = 0;
+    gold = kStartingGold;
+    _lifetimeScoreAtRunStart = stats.lifetimeScore;
     handsLeft = 4;
     discardsLeft = 2;
     hintsLeft = 1;
-    shopRerollsLeft = 1;
     hintWord = null;
     hintEstimatedScore = null;
     lastScore = null;
@@ -151,41 +268,57 @@ class GameController extends ChangeNotifier {
     bestWordPlayed = null;
     _setupLevel();
     _refillHand();
-    phase = RunPhase.playing;
-    message = mode == RunMode.daily
-        ? 'Günlük · 2–8 harfli Türkçe kelime kur'
-        : '2–8 harfli Türkçe kelime kur · hedefi geç';
+    if (runMode == RunMode.classic) {
+      // Koşuya girmeden önce oyuncu başlangıç altınını harcayabilsin.
+      _openShop(pregame: true);
+      message = '';
+    } else {
+      phase = RunPhase.playing;
+      message = 'Günlük meydan okuma';
+    }
     notifyListeners();
   }
 
   void _setupLevel() {
-    // Tek sürekli eğri — L3→L4 uçurumu yok
-    final growth = endless ? 1.2 : 1.22;
-    final baseTarget = endless ? 48 : 32;
-    final baseLevel = endless ? (12 + (level - 12)) : level;
-    target = (baseTarget * pow(growth, baseLevel - 1)).round();
+    requiredLength = lengthForLevel(level);
+    // Tek kaynak: scoring.computeLevelTarget (uzunluk-temelli, gerçek
+    // sözlük verisiyle kalibre edilmiş — bkz. kMedianRawWordScore).
+    target = computeLevelTarget(level: level, endless: endless);
     score = 0;
     handsLeft = 4;
     discardsLeft = 2;
     hintsLeft = 1;
-    shortWordsThisLevel = 0;
+    comboStreak = 0;
+    final extraPasses = ownedJokers
+        .where((j) => j.kind == JokerKind.extraPass)
+        .fold<int>(0, (a, j) => a + j.value.round());
+    passesLeft = 1 + extraPasses;
     hintWord = null;
     hintEstimatedScore = null;
     lastEfficiencyBonus = 0;
     lastGoldEarned = 0;
     playedThisLevel.clear();
     if (isBossLevel && bosses.isNotEmpty) {
-      final idx = _seededIndex(
-        bosses.length,
-        salt: level * 17 + (runSeed ?? 0),
-      );
-      activeBoss = bosses[idx];
-      message = 'BOSS: ${activeBoss!.name} — ${activeBoss!.description}';
+      // Uzunlukla uyumsuz boss hiç seçilmesin (örn. "en fazla 4 harf"
+      // kuralı 6 harfli bir seviyede asla kazanılamaz).
+      final pool = dictionary == null
+          ? bosses
+          : bosses
+              .where((b) => dictionary!.hasWordOfLength(
+                    requiredLength,
+                    validate: (w) => b.validate(w) == null,
+                  ))
+              .toList();
+      if (pool.isNotEmpty) {
+        final idx = _seededIndex(pool.length, salt: level * 17 + (runSeed ?? 0));
+        activeBoss = pool[idx];
+      } else {
+        activeBoss = null;
+      }
+      message = '';
     } else {
       activeBoss = null;
-      message = endless
-          ? 'Endless $level — hedef $target'
-          : 'Seviye $level — hedef $target';
+      message = '';
     }
   }
 
@@ -199,16 +332,63 @@ class GameController extends ChangeNotifier {
     if (need > 0) {
       hand.addAll(bag.draw(need));
     }
+    _ensureSolvable();
+  }
+
+  /// Eldeki harflerle bu seviyenin gerektirdiği uzunlukta, henüz
+  /// oynanmamış ve boss kuralına uyan bir kelime kurulamıyorsa, sözlükten
+  /// böyle bir kelime seçip elin içine "eker" — oyuncuya asla kelimesiz
+  /// bir el gösterilmez.
+  void _ensureSolvable() {
+    if (dictionary == null) return;
+
+    bool valid(String w) {
+      if (playedThisLevel.contains(w)) return false;
+      return activeBoss?.validate(w) == null;
+    }
+
+    final solvable = dictionary!.findPlayableWordOfLength(
+          requiredLength,
+          hand.map((t) => t.letter),
+          validate: valid,
+        ) !=
+        null;
+    if (solvable) return;
+
+    final rng = Random(
+      ((runSeed ?? 1) + level * 53 + hand.length * 7 +
+              DateTime.now().microsecondsSinceEpoch) &
+          0x7fffffff,
+    );
+    final word = dictionary!.pickRandomWordOfLength(
+      requiredLength,
+      validate: valid,
+      rng: rng,
+    );
+    if (word == null) return; // sözlükte bu uzunlukta uygun kelime yok
+
+    bag.returnTiles(hand);
+    hand.clear();
+    var synth = 0;
+    for (final ch in word.split('')) {
+      final tile = bag.drawLetter(ch) ??
+          LetterTile(id: '${ch}_g${level}_${synth++}', letter: ch);
+      hand.add(tile);
+    }
+    final fillerNeeded = handSize - hand.length;
+    if (fillerNeeded > 0) {
+      hand.addAll(bag.draw(fillerNeeded));
+    }
   }
 
   void toggleSelect(LetterTile tile) {
     if (phase != RunPhase.playing) return;
     if (selected.contains(tile)) {
       selected.remove(tile);
-    } else if (selected.length < kMaxWordLength) {
+    } else if (selected.length < requiredLength) {
       selected.add(tile);
     } else {
-      message = 'En fazla $kMaxWordLength harf seçebilirsin.';
+      message = 'Bu seviye tam $requiredLength harf istiyor.';
     }
     notifyListeners();
   }
@@ -243,12 +423,6 @@ class GameController extends ChangeNotifier {
     moveSelected(index, index + 1);
   }
 
-  void sortHand() {
-    if (phase != RunPhase.playing) return;
-    hand.sort((a, b) => _trLetterCompare(a.letter, b.letter));
-    notifyListeners();
-  }
-
   bool selectWordFromHand(String word) {
     if (phase != RunPhase.playing) return false;
     final target = normalizeTr(word);
@@ -274,17 +448,18 @@ class GameController extends ChangeNotifier {
 
   String get selectedWord => selected.map((t) => t.letter).join();
 
-  int? get livePreviewScore {
-    if (dictionary == null || !isValidWordLength(selected.length)) return null;
+  /// Anlık skor önizlemesi (tam detay) — hangi joker'lerin tetiklendiğini
+  /// göstermek için UI tarafından da kullanılır.
+  ScoreBreakdown? get livePreviewBreakdown {
+    if (dictionary == null || selected.length != requiredLength) return null;
     final word = normalizeTr(selectedWord);
     if (!dictionary!.contains(word)) return null;
     if (playedThisLevel.contains(word)) return null;
     if (activeBoss?.validate(word) != null) return null;
-    if (word.length <= 3 && shortWordsThisLevel >= kMaxShortWordsPerLevel) {
-      return null;
-    }
-    return scoreWord(word: word, jokers: ownedJokers).total;
+    return scoreWord(word: word, jokers: ownedJokers);
   }
+
+  int? get livePreviewScore => livePreviewBreakdown?.total;
 
   double get progressToTarget =>
       target <= 0 ? 0 : (score / target).clamp(0.0, 1.0);
@@ -296,13 +471,11 @@ class GameController extends ChangeNotifier {
       notifyListeners();
       return;
     }
-    final word = dictionary!.findPlayableWord(
+    final word = dictionary!.findPlayableWordOfLength(
+      requiredLength,
       hand.map((t) => t.letter),
       validate: (w) {
         if (playedThisLevel.contains(w)) return false;
-        if (w.length <= 3 && shortWordsThisLevel >= kMaxShortWordsPerLevel) {
-          return false;
-        }
         return activeBoss?.validate(w) == null;
       },
     );
@@ -323,35 +496,30 @@ class GameController extends ChangeNotifier {
   void playWord() {
     if (phase != RunPhase.playing || dictionary == null) return;
     if (selected.isEmpty) {
-      message = 'Önce harf seç (sırayla dokun).';
+      message = 'Harf seç.';
       HapticFeedback.selectionClick();
       notifyListeners();
       return;
     }
 
     final word = normalizeTr(selectedWord);
-    if (!isValidWordLength(word.length)) {
-      message =
-          'Kelime $kMinWordLength–$kMaxWordLength harf olmalı (şimdi ${word.length}).';
+    if (word.length != requiredLength) {
+      message = 'Bu seviye tam $requiredLength harf istiyor.';
+      selected.clear();
       HapticFeedback.heavyImpact();
       notifyListeners();
       return;
     }
     if (!dictionary!.contains(word)) {
-      message = '"$word" sözlükte yok — başka bir kelime dene.';
+      message = 'Sözlükte yok';
+      selected.clear();
       HapticFeedback.heavyImpact();
       notifyListeners();
       return;
     }
     if (playedThisLevel.contains(word)) {
       message = '"$word" bu seviyede zaten oynandı.';
-      HapticFeedback.heavyImpact();
-      notifyListeners();
-      return;
-    }
-    if (word.length <= 3 && shortWordsThisLevel >= kMaxShortWordsPerLevel) {
-      message =
-          'Bu seviyede en fazla $kMaxShortWordsPerLevel kısa (≤3) kelime.';
+      selected.clear();
       HapticFeedback.heavyImpact();
       notifyListeners();
       return;
@@ -360,19 +528,22 @@ class GameController extends ChangeNotifier {
     final bossError = activeBoss?.validate(word);
     if (bossError != null) {
       message = bossError;
+      selected.clear();
       HapticFeedback.heavyImpact();
       notifyListeners();
       return;
     }
 
-    final breakdown = scoreWord(word: word, jokers: ownedJokers);
+    comboStreak += 1;
+    final breakdown =
+        scoreWord(word: word, jokers: ownedJokers, comboStreak: comboStreak);
     lastScore = breakdown;
     score += breakdown.total;
+    stats.addScore(breakdown.total);
     handsLeft -= 1;
     hintWord = null;
     hintEstimatedScore = null;
     playedThisLevel.add(word);
-    if (word.length <= 3) shortWordsThisLevel += 1;
     if (breakdown.total > bestWordScore) {
       bestWordScore = breakdown.total;
       bestWordPlayed = word;
@@ -392,7 +563,11 @@ class GameController extends ChangeNotifier {
     if (score >= target) {
       lastEfficiencyBonus = handsLeft * 3;
       score += lastEfficiencyBonus;
-      lastGoldEarned = 2 + handsLeft * 2;
+      stats.addScore(lastEfficiencyBonus);
+      final extraGold = ownedJokers
+          .where((j) => j.kind == JokerKind.extraGold)
+          .fold<int>(0, (a, j) => a + j.value.round());
+      lastGoldEarned = 2 + handsLeft * 2 + extraGold;
       gold += lastGoldEarned;
       message = lastEfficiencyBonus > 0
           ? 'Seviye geçildi! +${breakdown.total}$notesHint · '
@@ -404,13 +579,19 @@ class GameController extends ChangeNotifier {
       stats.save();
       _openShop();
     } else if (handsLeft <= 0) {
+      // Eller bitti, hedefe ulaşılamadı — koşu burada biter (klasik/günlük/
+      // endless hepsi aynı: yenilgi ekranı, ana ekrana dönüş).
       phase = RunPhase.lost;
       final gap = target - score;
       final best = bestWordPlayed != null
           ? ' En iyi: $bestWordPlayed (+$bestWordScore).'
           : '';
-      message = 'Turlar bitti. $score / $target (−$gap).$best';
+      message = 'Kaybettin. $score / $target (−$gap).$best';
       HapticFeedback.heavyImpact();
+      if (!endless) {
+        stats.clearSavedRun();
+      }
+      stats.save();
     } else {
       message = '+${breakdown.total}$notesHint · $score / $target';
     }
@@ -435,96 +616,93 @@ class GameController extends ChangeNotifier {
     bag.returnTiles(dumped);
     _refillHand();
     message =
-        'Atılanlar torbaya döndü · atma $discardsLeft · torba ${bag.remaining}';
+        'Atıldı · $discardsLeft kaldı';
     notifyListeners();
   }
 
-  void _openShop() {
+  /// "Bu ellerde kelime göremiyorum" için mulligan — tüm eli yeniler,
+  /// `handsLeft`'e dokunmaz. Seviye başına sınırlı (bkz. `passesLeft`).
+  void usePass() {
+    if (phase != RunPhase.playing) return;
+    if (passesLeft <= 0) {
+      message = 'Pas hakkı yok.';
+      notifyListeners();
+      return;
+    }
+    passesLeft -= 1;
+    bag.returnTiles(hand);
+    hand.clear();
+    selected.clear();
+    hintWord = null;
+    hintEstimatedScore = null;
+    _refillHand();
+    message = 'Yeni harfler geldi.';
+    HapticFeedback.selectionClick();
+    notifyListeners();
+  }
+
+  void _openShop({bool pregame = false}) {
+    _pregameShop = pregame;
     phase = RunPhase.shop;
-    shopRerollsLeft = 1;
     _rollShopOffers();
     if (shopOffers.isEmpty) {
-      advanceAfterShop(null);
+      advanceAfterShop();
     }
   }
 
   void _rollShopOffers() {
     final pool =
         catalog.where((j) => !ownedJokers.any((o) => o.id == j.id)).toList();
-    final rng = Random(
-      (runSeed ?? 1) + level * 31 + (1 - shopRerollsLeft) * 97 + gold,
-    );
+    final rng = Random((runSeed ?? 1) + level * 31 + gold);
     pool.shuffle(rng);
-    shopOffers = pool.take(3).toList();
+    shopOffers = pool.take(2).toList();
   }
 
-  void rerollShop() {
-    if (phase != RunPhase.shop) return;
-    if (shopRerollsLeft <= 0) {
-      message = 'Reroll hakkı bitti.';
-      notifyListeners();
-      return;
-    }
-    if (gold < kShopRerollCost) {
-      message = 'Reroll için $kShopRerollCost altın gerekli.';
-      notifyListeners();
-      return;
-    }
-    gold -= kShopRerollCost;
-    shopRerollsLeft -= 1;
-    _rollShopOffers();
-    message = 'Mağaza yenilendi (−$kShopRerollCost altın).';
+  /// Ödüllü reklam sonunda mağazaya altın ekler (bkz. `AdsController`).
+  void grantBonusGold(int amount) {
+    if (phase != RunPhase.shop || amount <= 0) return;
+    gold += amount;
+    message = 'Reklam ödülü: +$amount altın';
     notifyListeners();
   }
 
-  /// Joker satın al; slot doluysa en ucuzu yarım fiyata satılır.
+  /// Joker satın al. Slot doluysa alma — otomatik satış yok.
   void buyJoker(JokerCard joker) {
     if (phase != RunPhase.shop) return;
     if (!shopOffers.any((j) => j.id == joker.id)) return;
-    if (gold < joker.cost) {
-      message = 'Yetersiz altın (${joker.cost} gerekir).';
+    if (ownedJokers.length >= kMaxJokerSlots) {
+      message = 'Bonus slotların dolu.';
       notifyListeners();
       return;
     }
-
-    var soldNote = '';
-    if (ownedJokers.length >= kMaxJokerSlots) {
-      ownedJokers.sort((a, b) => a.cost.compareTo(b.cost));
-      final sold = ownedJokers.removeAt(0);
-      final refund = (sold.cost / 2).floor();
-      gold += refund;
-      soldNote = ' · ${sold.name} satıldı (+$refund)';
+    if (gold < joker.cost) {
+      message = 'Yetersiz altın';
+      notifyListeners();
+      return;
     }
 
     gold -= joker.cost;
     ownedJokers.add(joker);
     shopOffers.removeWhere((j) => j.id == joker.id);
-    message = '${joker.name} alındı (−${joker.cost})$soldNote';
+    message = '${joker.name} (−${joker.cost})';
     HapticFeedback.selectionClick();
     notifyListeners();
   }
 
-  void sellJoker(JokerCard joker) {
-    if (phase != RunPhase.shop) return;
-    final idx = ownedJokers.indexWhere((j) => j.id == joker.id);
-    if (idx < 0) return;
-    ownedJokers.removeAt(idx);
-    final refund = (joker.cost / 2).floor().clamp(1, joker.cost);
-    gold += refund;
-    message = '${joker.name} satıldı (+$refund altın)';
-    notifyListeners();
-  }
-
-  void advanceAfterShop(JokerCard? bought) {
-    if (bought != null) {
-      buyJoker(bought);
-      if (!ownedJokers.any((j) => j.id == bought.id)) {
-        // Satın alma başarısız (altın yok) — mağazada kal
-        return;
-      }
+  /// Mağazadan çıkıp bir sonraki seviyeye (veya koşu bitişine) geçer.
+  /// Joker satın alma bundan tamamen ayrı (bkz. `buyJoker`) — mağazada
+  /// birden fazla joker alıp gezinebilir, yalnızca bu çağrıldığında çıkılır.
+  void advanceAfterShop() {
+    if (_pregameShop) {
+      _pregameShop = false;
+      phase = RunPhase.playing;
+      shopOffers.clear();
+      selected.clear();
+      notifyListeners();
+      return;
     }
 
-    final finishedClassic = !endless && level >= 12;
+    final finishedClassic = !endless && level >= kClassicLevels;
     if (finishedClassic) {
       phase = RunPhase.won;
       message = mode == RunMode.daily
@@ -536,6 +714,7 @@ class GameController extends ChangeNotifier {
         stats.noteClassicWin();
       }
       stats.noteLevelReached(level);
+      stats.clearSavedRun();
       stats.save();
       notifyListeners();
       return;
@@ -551,15 +730,16 @@ class GameController extends ChangeNotifier {
     }
     hand.clear();
     _refillHand();
+    _persistRunState();
     notifyListeners();
   }
 
-  void skipShop() => advanceAfterShop(null);
+  void skipShop() => advanceAfterShop();
 
   void enterEndless() {
     if (phase != RunPhase.won) return;
     endless = true;
-    level = 13;
+    level = kClassicLevels + 1;
     phase = RunPhase.playing;
     shopOffers.clear();
     selected.clear();
@@ -570,6 +750,48 @@ class GameController extends ChangeNotifier {
     hand.clear();
     _refillHand();
     message = 'Endless başladı · hedefler büyümeye devam';
+    notifyListeners();
+  }
+
+  /// Screenshot QA: zor durumlara atla (yalnızca debug build).
+  void debugQaPrepare(String scene) {
+    if (!kDebugMode) return;
+    startNewRun(runMode: RunMode.classic);
+    switch (scene) {
+      case 'shop':
+        lastGoldEarned = 4;
+        lastEfficiencyBonus = 6;
+        gold = gold < 8 ? 8 : gold;
+        _openShop();
+      case 'boss_shop':
+        level = 3;
+        _setupLevel();
+        lastGoldEarned = 6;
+        lastEfficiencyBonus = 3;
+        gold = gold < 10 ? 10 : gold;
+        _openShop();
+      case 'boss_playing':
+        level = 4;
+        _setupLevel();
+        hand.clear();
+        selected.clear();
+        _refillHand();
+        phase = RunPhase.playing;
+      case 'won':
+        level = kClassicLevels;
+        phase = RunPhase.won;
+        message = 'Koşu tamam! Endless ile devam edebilirsin.';
+      case 'lost':
+        level = 2;
+        target = 40;
+        score = 12;
+        phase = RunPhase.lost;
+        bestWordPlayed = 'masa';
+        bestWordScore = 18;
+        message = 'Turlar bitti. 12 / 40 (−28). En iyi: masa (+18).';
+      default:
+        break;
+    }
     notifyListeners();
   }
 }

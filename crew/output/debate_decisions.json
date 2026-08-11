@@ -1,50 +1,189 @@
 {
   "results": [
     {
+      "task": "designer_pitch",
+      "agent": "Tasarimci",
+      "output": "Tasarimci: Tur8 ekonomi+boss 3 oneri",
+      "stage": "debate"
+    },
+    {
+      "task": "dictionary_pitch",
+      "agent": "Sozluk",
+      "output": "Sozluk: Tur8 destek 3 oneri",
+      "stage": "debate"
+    },
+    {
+      "task": "balance_pitch",
+      "agent": "Denge",
+      "output": "Denge: Tur8 ekonomi+boss 3 oneri",
+      "stage": "debate"
+    },
+    {
+      "task": "content_pitch",
+      "agent": "Icerik/Gorsel",
+      "output": "Icerik: Tur8 + deferred ses/android",
+      "stage": "debate"
+    },
+    {
       "task": "facilitate",
       "agent": "Facilitator",
-      "output": "Tur7: smooth_targets, dict_quality, discard_return, light_economy",
+      "output": "Tur8: boss_score_pressure, economy_fine_tune, joker_boss_dialog",
       "stage": "debate"
     }
   ],
   "context": {
     "current_task": "facilitate",
-    "task_description": "[aşama 0:debate] Eglence bosluklari turu",
+    "task_description": "[aşama 0:debate] Oyla ve backlog onayla",
     "current_stage": "debate",
-    "decisions": [
+    "debate_designer": [
       {
-        "id": "smooth_targets",
-        "title": "Tek surekli hedef egrisi + kisa kelime limiti",
-        "score": 12,
-        "mentions": 2,
-        "status": "approved",
-        "round": 7
+        "id": "economy_fine_tune",
+        "title": "Magaza: baslangic altin / cost / reroll ince ayar",
+        "why": "Tur7 ekonomisi var; playtest ile fiyat hissi oturt",
+        "effort": 2,
+        "impact": 5
       },
       {
-        "id": "dict_quality",
-        "title": "2-harf allowlist + blocklist",
-        "score": 11,
-        "mentions": 2,
-        "status": "approved",
-        "round": 7
+        "id": "joker_boss_dialog",
+        "title": "Boss oncesi joker-boss diyalog / UI kanca",
+        "why": "Boss preview var; joker sinerjisi metinle baglansin",
+        "effort": 2,
+        "impact": 4
       },
       {
-        "id": "discard_return",
-        "title": "Discard torbaya donsun",
-        "score": 10,
-        "mentions": 1,
-        "status": "approved",
-        "round": 7
-      },
-      {
-        "id": "light_economy",
-        "title": "Altin, joker fiyat, 5 slot, reroll maliyeti",
-        "score": 10,
-        "mentions": 1,
-        "status": "approved",
-        "round": 7
+        "id": "boss_score_pressure",
+        "title": "Boss seviyesinde skor baskisi HUD",
+        "why": "Oyuncu neden daha zor oldugunu gorsun",
+        "effort": 2,
+        "impact": 5
       }
     ],
-    "deferred": []
+    "last_output": "Tur8: boss_score_pressure, economy_fine_tune, joker_boss_dialog",
+    "debate_dictionary": [
+      {
+        "id": "boss_score_pressure",
+        "title": "Boss skor cezasi kelime uzunluguyla catismasin",
+        "why": "2-8 harf + kisa limit zaten var; ceza sozlugu bozmasin",
+        "effort": 1,
+        "impact": 3
+      },
+      {
+        "id": "joker_boss_dialog",
+        "title": "Diyalogda gecerli kelime kurali hatirlat",
+        "why": "Boss kisiti + sozluk beklentisi ayni cumlede",
+        "effort": 1,
+        "impact": 3
+      },
+      {
+        "id": "economy_fine_tune",
+        "title": "Sozluk listesi sabit; ekonomi rakamlari ayri",
+        "why": "Playtest fiyat ayari sozluk degistirmez",
+        "effort": 1,
+        "impact": 2
+      }
+    ],
+    "debate_balance": [
+      {
+        "id": "economy_fine_tune",
+        "title": "Joker cost / reroll / baslangic altin ince ayar",
+        "why": "Playtest: ucuz mu pahali mi netlestir",
+        "effort": 2,
+        "impact": 5
+      },
+      {
+        "id": "boss_score_pressure",
+        "title": "Boss seviyelerinde skor cezasi veya hedef baskisi",
+        "why": "Sadece kelime kisiti yetmiyor; skor gerilimi lazim",
+        "effort": 2,
+        "impact": 5
+      },
+      {
+        "id": "joker_boss_dialog",
+        "title": "Diyalog dengeyi anlatir; carpani sifirlamaz",
+        "why": "Metin kancasi; matematik balance ayri",
+        "effort": 1,
+        "impact": 3
+      }
+    ],
+    "debate_content": [
+      {
+        "id": "joker_boss_dialog",
+        "title": "Boss oncesi/sirasinda joker etkilesim metni",
+        "why": "Turkce isim + kisit + sahip joker baglantisi",
+        "effort": 2,
+        "impact": 4
+      },
+      {
+        "id": "boss_score_pressure",
+        "title": "Boss aciklamasina skor baskisi dili",
+        "why": "Oyuncu cezayi metinden anlasin",
+        "effort": 1,
+        "impact": 4
+      },
+      {
+        "id": "economy_fine_tune",
+        "title": "Joker cost hissi / magaza metin cilasi",
+        "why": "Fiyat bandi playtest ile hizalansin",
+        "effort": 1,
+        "impact": 3
+      },
+      {
+        "id": "offline_sfx",
+        "title": "Offline ses efektleri (istege bagli)",
+        "why": "Atmosfer; zorunlu degil",
+        "effort": 4,
+        "impact": 2
+      },
+      {
+        "id": "android_release",
+        "title": "Android release (ikon, splash)",
+        "why": "Dagitim; mekanik backlog sonrasi",
+        "effort": 3,
+        "impact": 2
+      }
+    ],
+    "decisions": [
+      {
+        "id": "boss_score_pressure",
+        "title": "Boss seviyesinde skor baskisi HUD",
+        "score": 34.0,
+        "mentions": 4,
+        "status": "shipped",
+        "round": 8,
+        "note": "Tur 8 UI tamamlandi"
+      },
+      {
+        "id": "economy_fine_tune",
+        "title": "Magaza: baslangic altin / cost / reroll ince ayar",
+        "score": 30.0,
+        "mentions": 4,
+        "status": "shipped",
+        "round": 8,
+        "note": "Tur 8 UI tamamlandi"
+      },
+      {
+        "id": "joker_boss_dialog",
+        "title": "Boss oncesi joker-boss diyalog / UI kanca",
+        "score": 28.0,
+        "mentions": 4,
+        "status": "shipped",
+        "round": 8,
+        "note": "Tur 8 UI tamamlandi"
+      }
+    ],
+    "deferred": [
+      {
+        "id": "offline_sfx",
+        "title": "Offline ses efektleri (istege bagli)",
+        "status": "deferred",
+        "reason": "Tur8 backlog: ses/Android ertelendi"
+      },
+      {
+        "id": "android_release",
+        "title": "Android release (ikon, splash)",
+        "status": "deferred",
+        "reason": "Tur8 backlog: ses/Android ertelendi"
+      }
+    ]
   }
 }

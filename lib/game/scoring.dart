@@ -1,6 +1,92 @@
+import 'dart:math' as math;
+
 import 'letter_bag.dart';
 import 'turkish.dart';
 import 'word_length.dart';
+
+// --- Tur 8 denge sabitleri (BalanceAgent; harf puanları değişmedi) ---
+
+/// Boss seviyelerinde hedef çarpanı. Skor formülüne uygulanmaz; yalnızca target.
+const double kBossTargetMultiplier = 1.1;
+
+/// Boss aralığı: [levelsBeforeBoss] normal + 1 boss (varsayılan L4, L8, …).
+const int kLevelsBeforeBoss = 3;
+
+/// Joker JSON `cost` bandı — ContentAgent bu aralıkta tutsun.
+const int kJokerCostMin = 3;
+const int kJokerCostMax = 6;
+
+/// Çarpan türü joker `value` üst sınırı (content şişirmesin).
+const double kJokerMultCap = 2.0;
+
+/// Düz bonus joker `value` üst sınırı.
+const int kJokerFlatBonusCap = 12;
+
+/// Seviye numarası boss mu? (`level % (levelsBeforeBoss+1) == 0`)
+bool isBossLevelNumber(
+  int level, {
+  int levelsBeforeBoss = kLevelsBeforeBoss,
+}) {
+  if (level <= 0) return false;
+  final period = levelsBeforeBoss + 1;
+  return level % period == 0;
+}
+
+/// Uzunluk → `tr_words.txt`'ten ölçülen medyan ham harf-puanı toplamı
+/// (dev-analiz: her uzunluk kovasındaki tüm kelimelerin harf puanları
+/// toplanıp medyanı alındı). Hedef eğrisi artık jenerik bir üstel fonksiyon
+/// değil, bu gerçek veriye dayanıyor — seviye uzunluğu değiştiğinde
+/// (`lengthForLevel`) oynanabilirlik otomatik ölçekleniyor.
+const Map<int, int> kMedianRawWordScore = {
+  2: 4,
+  3: 7,
+  4: 8,
+  5: 10,
+  6: 12,
+  7: 13,
+  8: 15,
+};
+
+/// Bir turda oynanabilecek el sayısı ile aynı (bkz. GameController).
+const int kHandsPerLevel = 4;
+
+/// 4 el boyunca ortalama seri (combo) çarpanı: (1.0+1.15+1.30+1.45)/4.
+const double kAvgComboMultiplier = 1.225;
+
+/// Hedefi "tipik" toplam skorun bu oranına ayarla — tamamı değil, rahat
+/// oynanabilir bir pay bırak.
+const double kTargetComfortFactor = 0.6;
+
+/// Endless'ta her tam turda (7 seviye) hedef bu oranda büyür.
+const double kEndlessLapGrowth = 1.25;
+
+/// Boss çarpanı olmadan, uzunluk + tur (lap) büyümesiyle hesaplanan baz hedef.
+int computeBaseLevelTarget({required int level}) {
+  final length = lengthForLevel(level);
+  final medianRaw = kMedianRawWordScore[length] ?? 10;
+  final typical = medianRaw * lengthMultiplier(length);
+  var target =
+      (typical * kHandsPerLevel * kAvgComboMultiplier * kTargetComfortFactor)
+          .round();
+  final lap = (level - 1) ~/ kClassicLevels;
+  if (lap > 0) {
+    target = (target * math.pow(kEndlessLapGrowth, lap)).round();
+  }
+  return target < 1 ? 1 : target;
+}
+
+/// Efektif seviye hedefi — boss'ta (4'ün katları + final seviye) ×
+/// [kBossTargetMultiplier], skor cezası yok. `endless=true` iken boss
+/// uygulanmaz (bkz. GameController.isBossLevel).
+int computeLevelTarget({required int level, bool endless = false}) {
+  final base = computeBaseLevelTarget(level: level);
+  final isBoss =
+      !endless && (isBossLevelNumber(level) || level == kClassicLevels);
+  if (isBoss) {
+    return (base * kBossTargetMultiplier).round();
+  }
+  return base;
+}
 
 enum JokerKind {
   vowelBonus,
@@ -15,6 +101,10 @@ enum JokerKind {
   flatBonus,
   rareLetterBonus,
   consonantStack,
+  /// Skora etki etmez — seviye bitince ekstra altın (bkz. GameController).
+  extraGold,
+  /// Skora etki etmez — seviye başına ekstra pas hakkı (bkz. GameController).
+  extraPass,
 }
 
 class JokerCard {
@@ -25,7 +115,7 @@ class JokerCard {
     required this.kind,
     required this.value,
     this.meta,
-    this.cost = 4,
+    this.cost = 4, // orta band (kJokerCostMin–kJokerCostMax)
   });
 
   final String id;
@@ -69,6 +159,7 @@ class BossModifier {
     required this.description,
     required this.rule,
     required this.value,
+    this.dialogHint,
   });
 
   final String id;
@@ -77,7 +168,11 @@ class BossModifier {
   final BossRule rule;
   final int value;
 
+  /// Mağaza→boss diyalogunda joker sinerji satırı (opsiyonel; content JSON).
+  final String? dialogHint;
+
   factory BossModifier.fromJson(Map<String, dynamic> json) {
+    final hint = json['dialogHint'];
     return BossModifier(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -87,6 +182,7 @@ class BossModifier {
         orElse: () => BossRule.minLength,
       ),
       value: (json['value'] as num).toInt(),
+      dialogHint: hint is String && hint.trim().isNotEmpty ? hint.trim() : null,
     );
   }
 
@@ -150,6 +246,7 @@ const _rareLetters = {'j', 'ğ', 'f', 'ö', 'v', 'ü', 'ş', 'ç'};
 ScoreBreakdown scoreWord({
   required String word,
   required List<JokerCard> jokers,
+  int comboStreak = 1,
 }) {
   final letters = normalizeTr(word).split('');
   var base = 0;
@@ -177,11 +274,12 @@ ScoreBreakdown scoreWord({
   var mult = 1.0;
   final notes = <String>[];
 
-  final lenMult = lengthMultiplier(letters.length);
-  if (lenMult != 1.0) {
-    mult *= lenMult;
-    notes.add('Uzunluk×${letters.length}: x$lenMult');
-  }
+  // Uzunluk ve seri çarpanları skora uygulanır ama ayrı bir metin notu
+  // olarak gösterilmez — seri zaten oyun ekranındaki rozette görünüyor,
+  // uzunluk etkisi toplam skordan zaten hissediliyor. Bu listede yalnızca
+  // joker bonusları (düz +N puan) kalır.
+  mult *= lengthMultiplier(letters.length);
+  mult *= comboMultiplier(comboStreak);
 
   for (final j in jokers) {
     switch (j.kind) {
@@ -237,6 +335,9 @@ ScoreBreakdown scoreWord({
           bonus += j.value.round();
           notes.add('${j.name}: +${j.value.round()}');
         }
+      case JokerKind.extraGold:
+      case JokerKind.extraPass:
+        break;
     }
   }
 

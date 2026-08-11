@@ -64,4 +64,8 @@ dart run scripts/run_crew.dart     # aşama 1–4
 
 ## Oyun özeti
 
-Harf torbasından el çek (8) → **2–8 harfli** Türkçe kelime kur → joker sinerjileriyle skor üret → hedefi geç → mağazadan joker al → boss seviyelerinde kısıtlamalarla oyna. Hepsi offline.
+Harf torbasından el çek (8) → seviyenin gerektirdiği tam uzunlukta (2–8
+harf, seviye = uzunluk) Türkçe kelime kur → joker sinerjileriyle skor üret
+→ hedefi geç → mağazadan joker al → boss seviyelerinde kısıtlamalarla oyna.
+Oynanış offline; reklam (AdMob) ve "reklamları kaldır" satın alımı (Play
+Billing) için internet gerekir.
