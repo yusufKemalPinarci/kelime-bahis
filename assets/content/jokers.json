@@ -26,7 +26,7 @@
   {
     "id": "kisa_ates",
     "name": "Kısa Ateş",
-    "description": "Tam 2 harfli kelimede x1.25 çarpan.",
+    "description": "Tam 3 harfli kelimede x1.25 çarpan.",
     "kind": "shortWordMult",
     "value": 1.25,
     "cost": 3
@@ -57,10 +57,10 @@
   },
   {
     "id": "alti_bonus",
-    "name": "Altılı Bonus",
-    "description": "Tam 6 harfli kelimede +14 puan.",
+    "name": "Altılı Vuruş",
+    "description": "Tam 6 harfli kelimede +12 puan.",
     "kind": "exactLengthBonus",
-    "value": 14,
+    "value": 12,
     "meta": 6,
     "cost": 5
   },
@@ -91,19 +91,35 @@
   {
     "id": "sessiz_yigin",
     "name": "Sessiz Yığın",
-    "description": "En az 4 sessiz harf varsa +16 puan.",
+    "description": "En az 4 sessiz harf varsa +12 puan.",
     "kind": "consonantStack",
-    "value": 16,
+    "value": 12,
     "meta": 4,
     "cost": 5
   },
   {
     "id": "sekizli",
-    "name": "Sekizli",
-    "description": "Tam 8 harfli kelimede +20 puan.",
+    "name": "Sekiz Nişanı",
+    "description": "Tam 8 harfli kelimede +12 puan.",
     "kind": "exactLengthBonus",
-    "value": 20,
+    "value": 12,
     "meta": 8,
     "cost": 6
+  },
+  {
+    "id": "comert_tuccar",
+    "name": "Cömert Tüccar",
+    "description": "Seviye bitince +1 ekstra altın.",
+    "kind": "extraGold",
+    "value": 1,
+    "cost": 4
+  },
+  {
+    "id": "sabirli_kasif",
+    "name": "Sabırlı Kâşif",
+    "description": "Bu seviyede +1 ekstra pas hakkı.",
+    "kind": "extraPass",
+    "value": 1,
+    "cost": 5
   }
 ]

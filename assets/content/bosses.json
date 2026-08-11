@@ -2,64 +2,73 @@
   {
     "id": "sessiz_devriye",
     "name": "Sessiz Devriye",
-    "description": "En az 3 sessiz harf zorunlu.",
+    "description": "Kelimede en az 3 sessiz harf olmalı.",
     "rule": "minConsonants",
-    "value": 3
+    "value": 3,
+    "dialogHint": "Jokerlerin bu boss'ta: Sessiz Ordu ve Sessiz Yığın güçlenir; sesliye yaslanan jokerler zayıf kalır."
   },
   {
     "id": "tek_sesli",
     "name": "Tek Sesli",
-    "description": "Kelimede en fazla 2 sesli harf.",
+    "description": "Kelimede en fazla 2 sesli harf olabilir.",
     "rule": "maxVowels",
-    "value": 2
+    "value": 2,
+    "dialogHint": "Jokerlerin bu boss'ta: sessiz bonusları işe yarar; Çift Sesli nadiren dolar."
   },
   {
     "id": "ses_korosu",
     "name": "Ses Korosu",
-    "description": "En az 2 sesli harf zorunlu.",
+    "description": "Kelimede en az 2 sesli harf olmalı.",
     "rule": "minVowels",
-    "value": 2
+    "value": 2,
+    "dialogHint": "Jokerlerin bu boss'ta: Çift Sesli ve İlk Harf (sesli açılışla) iyi gider."
   },
   {
     "id": "tekil_yasa",
     "name": "Tekil Yasa",
-    "description": "Aynı harf tekrar edemez.",
+    "description": "Aynı harf kelimede tekrar edemez.",
     "rule": "noDuplicateLetters",
-    "value": 1
+    "value": 1,
+    "dialogHint": "Jokerlerin bu boss'ta: Tekrar Avcısı hiç tetiklenmez; çeşitlilik + Nadir Avcı tercih et."
   },
   {
     "id": "sesli_acilis",
     "name": "Sesli Açılış",
-    "description": "Kelime sesli harfle başlamalı.",
+    "description": "Kelime bir sesli harfle başlamalı.",
     "rule": "startsWithVowel",
-    "value": 1
+    "value": 1,
+    "dialogHint": "Jokerlerin bu boss'ta: İlk Harf sesli açılışla sinerji kurar; Çift Sesli de destekler."
   },
   {
     "id": "sert_cekirdek",
     "name": "Sert Çekirdek",
-    "description": "En az 4 sessiz harf zorunlu.",
+    "description": "Kelimede en az 4 sessiz harf olmalı.",
     "rule": "minConsonants",
-    "value": 4
+    "value": 4,
+    "dialogHint": "Jokerlerin bu boss'ta: Sessiz Yığın neredeyse her kelimede tetiklenir; Sessiz Ordu da güçlenir."
   },
   {
     "id": "dar_nefes",
     "name": "Dar Nefes",
-    "description": "Kelimede en fazla 1 sesli harf.",
+    "description": "Kelimede en fazla 1 sesli harf olabilir.",
     "rule": "maxVowels",
-    "value": 1
+    "value": 1,
+    "dialogHint": "Jokerlerin bu boss'ta: Çift Sesli neredeyse ölü; sessiz ve kısa kelime jokerlerine yaslan."
   },
   {
     "id": "uzun_yol",
     "name": "Uzun Yol",
     "description": "En az 5 harfli kelime zorunlu.",
     "rule": "minLength",
-    "value": 5
+    "value": 5,
+    "dialogHint": "Jokerlerin bu boss'ta: Uzun Dalga, Altılı Vuruş ve Sekiz Nişanı öne çıkar; Kısa Ateş susar."
   },
   {
     "id": "kisa_devriye",
     "name": "Kısa Devriye",
-    "description": "En fazla 4 harfli kelime.",
+    "description": "En fazla 4 harfli kelime kabul edilir.",
     "rule": "maxLength",
-    "value": 4
+    "value": 4,
+    "dialogHint": "Jokerlerin bu boss'ta: Kısa Ateş parlar; Uzun Dalga, Altılı Vuruş ve Sekiz Nişanı bu turda işe yaramaz."
   }
 ]

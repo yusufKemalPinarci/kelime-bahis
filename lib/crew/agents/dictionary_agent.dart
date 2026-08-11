@@ -7,11 +7,11 @@ Agent createDictionaryAgent() {
   return Agent(
     role: 'Sözlük Uzmanı',
     goal:
-        '[aşama dictionary] tr_words.txt’yi filtrele: 2–8 harf, yalnızca '
+        '[aşama dictionary] tr_words.txt’yi filtrele: 3–8 harf, yalnızca '
         'Türkçe harf; offline WordDictionary ile uyumlu tut',
     backstory:
         'design sonrası, balance öncesi çalışır. Offline sözlük bakımı; '
-        'harici API yok. Oyun 2–8 harfli Türkçe kelime kabul eder.',
+        'harici API yok. Oyun 3–8 harfli Türkçe kelime kabul eder.',
     execute: (CrewContext ctx) async {
       final path = ctx.get<String>('dictionaryPath') ??
           'assets/dictionary/tr_words.txt';
@@ -23,7 +23,7 @@ Agent createDictionaryAgent() {
       }
 
       final design = ctx.get<Map<String, dynamic>>('design') ?? {};
-      final minLen = (design['minWordLength'] as num?)?.toInt() ?? 2;
+      final minLen = (design['minWordLength'] as num?)?.toInt() ?? 3;
       final maxLen = (design['maxWordLength'] as num?)?.toInt() ?? 8;
 
       final raw = await file.readAsLines();

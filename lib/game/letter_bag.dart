@@ -32,32 +32,34 @@ const Map<String, int> kLetterPoints = {
   'z': 4,
 };
 
-/// Turkish Scrabble-like bag composition (scaled for mobile runs).
+/// Mobil-dostu torba dağılımı: resmi Scrabble oranı (~%40 sesli) 8 harflik
+/// tek elde kelime kurmayı zorlaştırıyordu. Sesli oranı ~%30'a çekildi,
+/// yaygın sessizler (k/l/n/r/t/s) güçlendirildi.
 const Map<String, int> kLetterBagCounts = {
-  'a': 12,
-  'b': 2,
+  'a': 8,
+  'b': 3,
   'c': 2,
   'ç': 2,
   'd': 5,
-  'e': 12,
+  'e': 8,
   'f': 1,
   'g': 2,
   'ğ': 1,
-  'h': 1,
-  'ı': 4,
-  'i': 8,
+  'h': 2,
+  'ı': 3,
+  'i': 5,
   'j': 1,
-  'k': 7,
-  'l': 7,
+  'k': 8,
+  'l': 8,
   'm': 4,
-  'n': 7,
+  'n': 8,
   'o': 3,
   'ö': 1,
   'p': 1,
   'r': 7,
-  's': 4,
+  's': 5,
   'ş': 2,
-  't': 5,
+  't': 6,
   'u': 3,
   'ü': 2,
   'v': 1,
@@ -111,6 +113,15 @@ class LetterBag {
     final drawn = _tiles.sublist(0, n);
     _tiles.removeRange(0, n);
     return drawn;
+  }
+
+  /// Belirli bir harfle eşleşen ilk taşı torbadan çıkarır (yoksa null).
+  /// Kelime kurulabilirliği garantisi için el "ekilirken" kullanılır.
+  LetterTile? drawLetter(String letter) {
+    final n = normalizeTr(letter);
+    final idx = _tiles.indexWhere((t) => normalizeTr(t.letter) == n);
+    if (idx < 0) return null;
+    return _tiles.removeAt(idx);
   }
 
   void returnTiles(Iterable<LetterTile> tiles) {
