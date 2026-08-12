@@ -1,7 +1,7 @@
 name: kelime_bahis
-description: Full offline Türkçe kelime oyunu (Wordlike/Balatro tarzı).
+description: Full offline Türkçe kelime oyunu (Adventure kule modu + Classic sonsuz mod).
 publish_to: "none"
-version: 1.0.6+7
+version: 1.1.2+10
 
 environment:
   sdk: ^3.10.4
@@ -47,8 +47,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/dictionary/tr_words.txt
-    - assets/content/jokers.json
-    - assets/content/bosses.json
     - assets/audio/sfx/
   fonts:
     - family: LibreCaslonText

@@ -21,6 +21,7 @@ void main() {
       soundController: SoundController(),
     ));
     expect(find.text('KELİME\nBAHİS'), findsOneWidget);
-    expect(find.text('OYNA'), findsOneWidget);
+    expect(find.text('MACERA'), findsOneWidget);
+    expect(find.text('KLASİK'), findsOneWidget);
   });
 }

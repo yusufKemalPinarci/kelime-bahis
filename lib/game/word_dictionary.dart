@@ -140,6 +140,27 @@ class WordDictionary {
     return pool.elementAt(rng.nextInt(pool.length));
   }
 
+  /// [pickRandomWordOfLength]'ün serbest-uzunluk sürümü — [exactLength]
+  /// verilmezse 2..8 arası tüm uzunluklardan [validate]'i sağlayan kelimeler
+  /// havuzlanır ve [rng] ile biri seçilir. Adventure görevlerinde (sabit
+  /// uzunluk şartı olmayan) "el her zaman çözülebilir" garantisini beslemek
+  /// için kullanılır (bkz. GameController._ensureSolvableAdventure).
+  String? pickRandomWordMatching({
+    required bool Function(String word) validate,
+    required Random rng,
+    int? exactLength,
+  }) {
+    if (exactLength != null) {
+      return pickRandomWordOfLength(exactLength, validate: validate, rng: rng);
+    }
+    final pool = <String>[];
+    for (var len = kMinWordLength; len <= kMaxWordLength; len++) {
+      pool.addAll((_byLength[len] ?? const <String>[]).where(validate));
+    }
+    if (pool.isEmpty) return null;
+    return pool.elementAt(rng.nextInt(pool.length));
+  }
+
   bool _canSpell(String word, Map<String, int> hand) {
     final need = <String, int>{};
     for (final ch in word.split('')) {

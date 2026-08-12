@@ -7,6 +7,7 @@ import 'game/game_controller.dart';
 import 'services/ads_controller.dart';
 import 'services/purchase_controller.dart';
 import 'services/sound_controller.dart';
+import 'views/screens/adventure_map_screen.dart';
 import 'views/screens/game_screen.dart';
 import 'views/screens/home_screen.dart';
 import 'views/theme/game_colors.dart';
@@ -79,9 +80,9 @@ class KelimeBahisApp extends StatelessWidget {
         },
       ),
       routes: {
+        '/adventure-map': (_) => AdventureMapScreen(controller: controller),
         '/play': (_) => GameScreen(
               controller: controller,
-              adsController: adsController,
               soundController: soundController,
             ),
       },
